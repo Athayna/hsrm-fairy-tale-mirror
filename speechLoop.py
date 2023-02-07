@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 
 class SpeechLoop():
 
-    def __init__(self, handler: handler.Handler):
+    def __init__(self, handler):
         self.handler = handler
 
     def listen(self):
@@ -33,22 +33,23 @@ class SpeechLoop():
                 except sr.UnknownValueError:
                     print("unknown error occurred")        
 
-    def speak_text(command):
-        gTTS(text=command, lang='de').write_to_fp(voice := NamedTemporaryFile())
-        playsound(voice.name)
-        voice.close()
+    def speak_text(self, command):
+        tts = gTTS(text=command, lang='de', slow=False)
+        tts.save('tts.mp3')
+        playsound('tts.mp3')
+        os.remove('tts.mp3')
 
     def play(self) -> None:
         pass
 
-    def get_maerchen():
+    def get_maerchen(self):
         list = []
         for file in os.listdir(os.getcwd() + "/maerchen"):
             if file.endswith(".txt"):
                 list.append(file[:-4])
         return list
 
-    def find_weather():
+    def find_weather(self):
         city_name = 'Wiesbaden'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -78,28 +79,31 @@ class SpeechLoop():
 
 class FirstTimeLoop(SpeechLoop):
 
-    def __init__(self, handler: handler.Handler):
+    def __init__(self, handler):
         super().__init__(handler)
 
     def play(self) -> None:
-        self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr.")
-        self.speak_text("Zuerst möchte ich dich kennenlernen.")
+        # self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr.")
+        # self.speak_text("Zuerst möchte ich dich kennenlernen.")
         self.speak_text("Wer bist du?")
         self.handler.result = self.listen()
-        self.user["name"] = self.handler.result
-        self.speak_text("Hallo {0}".format(self.handler.user["name"]))
+        self.handler.user.name = self.handler.result
+        self.speak_text("Hallo {0}".format(self.handler.user.name))
         self.speak_text("Wann hast du Geburtstag?")
         self.handler.result = self.listen()
-        self.user["birthday"] = self.handler.result
-        self.user["age"] = datetime.datetime.now().year - int(self.handler.user["birthday"].split(".")[2])
-        self.speak_text("Du bist also {0} Jahre alt.".format(self.handler.user["age"]))
-        self.speak_text("Das war alles was ich über dich wissen wollte. Ich wünsche dir viel Spaß mit mir.")
-        self.speak_text("Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich.")
+        self.handler.user.birthday = self.handler.result
+        self.handler.user.age = datetime.datetime.now().year - int(self.handler.user.birthday.split(".")[2])
+        self.speak_text("Du bist also {0} Jahre alt.".format(self.handler.user.age))
+
+        # self.speak_text("Das war alles was ich über dich wissen wollte. Ich wünsche dir viel Spaß mit mir.")
+        # self.speak_text("Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich.")
+
+        self.handler.setSpeechLoop(self.handler.getSpeechLoop("startLoop"))
 
 
 class StartLoop(SpeechLoop):
 
-    def __init__(self, handler: handler.Handler):
+    def __init__(self, handler):
         super().__init__(handler)
 
     def play(self) -> None:
@@ -108,16 +112,16 @@ class StartLoop(SpeechLoop):
                             
         if "spiegel" in self.handler.result:
             if (datetime.datetime.now().hour < 10):
-                self.speak_text("Guten Morgen {0}, komm putz dir die Zähne mit mir!".format(self.handler.user["name"]))
+                self.speak_text("Guten Morgen {0}, komm putz dir die Zähne mit mir!".format(self.handler.user.name))
             elif (datetime.datetime.now().hour > 18):
-                self.speak_text("Guten Abend {0}, komm putz dir die Zähne mit mir und danach kann ich dir eine Geschichte vorlesen!".format(self.handler.user["name"]))
+                self.speak_text("Guten Abend {0}, komm putz dir die Zähne mit mir und danach kann ich dir eine Geschichte vorlesen!".format(self.handler.user.name))
             else:
-                self.speak_text("Hallo {0}, wie kann ich dir helfen?".format(self.handler.user["name"]))
+                self.speak_text("Hallo {0}, wie kann ich dir helfen?".format(self.handler.user.name))
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
             
 
 class MainLoop(SpeechLoop):
-    def __init__(self, handler: handler.Handler):
+    def __init__(self, handler):
         super().__init__(handler)
 
     def play(self) -> None:
@@ -131,7 +135,7 @@ class MainLoop(SpeechLoop):
             self.speak_text("Heute ist der {0}".format(datetime.datetime.now().strftime("%d.%m.%Y")))
 
         elif "geburtstag" in self.handler.result:
-            self.speak_text("Dein Geburtstag ist in {0} Tagen".format((datetime.datetime.now() - datetime.datetime.strptime(self.handler.user["birthday"], "%d.%m.%Y")).days))
+            self.speak_text("Dein Geburtstag ist in {0} Tagen".format((datetime.datetime.now() - datetime.datetime.strptime(self.handler.user.birthday, "%d.%m.%Y")).days))
 
         elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm")):
             weather = self.find_weather()
@@ -153,7 +157,7 @@ class MainLoop(SpeechLoop):
 
 class StoryLoop(SpeechLoop):
     
-    def __init__(self, handler: handler.Handler):
+    def __init__(self, handler):
         super().__init__(handler)
 
     def play(self) -> None:

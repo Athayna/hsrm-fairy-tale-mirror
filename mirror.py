@@ -1,4 +1,5 @@
 #pip install speechrecognition pyaudio gtts playsound beautifulsoup4 requests
+import codecs
 import speech_recognition as sr
 from gtts import gTTS
 from playsound import playsound
@@ -7,6 +8,8 @@ import requests
 from tempfile import NamedTemporaryFile
 import os
 import datetime
+import time
+import os
 
 def listen():
     r = sr.Recognizer()
@@ -33,9 +36,11 @@ def get_maerchen():
     return list
 
 def speak_text(command):
-    gTTS(text=command, lang='de').write_to_fp(voice := NamedTemporaryFile())
-    playsound(voice.name)
-    voice.close()
+    tts = gTTS(text=command, lang='de', slow=False)
+    tts.save('tts.mp3')
+    playsound('tts.mp3')
+    os.remove('tts.mp3')
+    
 
 def read_fairy_tale(title):
     try:
@@ -85,10 +90,10 @@ user = dict(
     birthday = ""
 )
 
-welcome()
+with sr.Microphone() as source: 
+    welcome()
 
-while(1):
-    with sr.Microphone() as source: 
+    while(1):
         result = listen()
                             
         if "spiegel" in result:

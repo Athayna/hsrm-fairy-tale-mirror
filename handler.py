@@ -1,4 +1,4 @@
-import user
+from user import User
 import speechLoop
 '''
 This is the handler class for the magic mirror project.
@@ -12,7 +12,7 @@ Typical programflow is:
 class Handler:
 
     def __init__(self):
-        self.user = user.User()
+        self.user = User('hans', 4, "01.01.2005")
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
@@ -22,18 +22,19 @@ class Handler:
         self.speechLoop = speechLoop
     
     def updateSpeechLoopDict(self,key:str, speechLoop:speechLoop.SpeechLoop) -> None:
-        self.responseDict.update({key, speechLoop})
+        self.speechLoopDict.update({key: speechLoop})
 
     def getSpeechLoop(self, key:str) -> speechLoop.SpeechLoop:
-        return self.responseDict[key]
+        return self.speechLoopDict[key]
 
     def fillDict(self) -> None:
-        self.responseDict.update({"startLoop", speechLoop.StartLoop()})
-        self.responseDict.update({"mainLoop", speechLoop.MainLoop()})
-        self.responseDict.update({"storyLoop", speechLoop.StoryLoop()})
+        self.updateSpeechLoopDict("startLoop", speechLoop.StartLoop(self))
+        self.updateSpeechLoopDict("mainLoop", speechLoop.MainLoop(self))
+        self.updateSpeechLoopDict("storyLoop", speechLoop.StoryLoop(self))
+        self.updateSpeechLoopDict("firstTimeLoop", speechLoop.FirstTimeLoop(self))
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.responseDict["startLoop"]
+        self.speechLoop = self.speechLoopDict["firstTimeLoop"]
         while(1):
             self.speechLoop.play()
