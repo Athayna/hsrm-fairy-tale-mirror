@@ -1,5 +1,5 @@
 class User:
-    def __init__(self, name, age, birthday):
+    def __init__(self, name, age, color):
         self.name = name
         self.age = age
-        self.birthday = birthday
+        self.color = color

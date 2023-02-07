@@ -1,4 +1,4 @@
-#pip install speechrecognition pyaudio gtts playsound beautifulsoup4 requests
+#pip install speechrecognition pyaudio gtts playsound beautifulsoup4 requests pillow
 import codecs
 import speech_recognition as sr
 from gtts import gTTS
@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile
 import os
 import datetime
 import time
-import os
 
 def listen():
     r = sr.Recognizer()
@@ -21,7 +20,7 @@ def listen():
             audio = r.listen(source)
             print("Interpreting input")
             result = r.recognize_google(audio, language="de-DE").lower()
-            print("Understood {0}, returning result".format(result))
+            print(f'Understood {result}, returning result')
             return result.lower()
         except sr.RequestError as e:
             print("Could not request results; {0}".format(e))

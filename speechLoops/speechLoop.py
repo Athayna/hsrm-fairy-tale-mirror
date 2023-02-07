@@ -26,10 +26,10 @@ class SpeechLoop():
                     audio = r.listen(source)
                     print("Interpreting input")
                     self.handler.result = r.recognize_google(audio, language="de-DE").lower()
-                    print("Understood {0}, returning self.handler.result".format(self.handler.result))
+                    print(f'Understood {self.handler.result}, returning self.handler.result')
                     return self.handler.result.lower()
                 except sr.RequestError as e:
-                    print("Could not request self.handler.results; {0}".format(e))
+                    print(f'Could not request self.handler.results; {e}')
                 except sr.UnknownValueError:
                     print("unknown error occurred")        
 
@@ -44,7 +44,7 @@ class SpeechLoop():
 
     def get_maerchen(self):
         list = []
-        for file in os.listdir(os.getcwd() + "/maerchen"):
+        for file in os.listdir(os.getcwd() + "../maerchen"):
             if file.endswith(".txt"):
                 list.append(file[:-4])
         return list
@@ -88,12 +88,12 @@ class FirstTimeLoop(SpeechLoop):
         self.speak_text("Wer bist du?")
         self.handler.result = self.listen()
         self.handler.user.name = self.handler.result
-        self.speak_text("Hallo {0}".format(self.handler.user.name))
+        self.speak_text(f'Hallo {self.handler.user.name}')
         self.speak_text("Wann hast du Geburtstag?")
         self.handler.result = self.listen()
         self.handler.user.birthday = self.handler.result
         self.handler.user.age = datetime.datetime.now().year - int(self.handler.user.birthday.split(".")[2])
-        self.speak_text("Du bist also {0} Jahre alt.".format(self.handler.user.age))
+        self.speak_text(f'Du bist also {self.handler.user.age} Jahre alt.')
 
         # self.speak_text("Das war alles was ich über dich wissen wollte. Ich wünsche dir viel Spaß mit mir.")
         # self.speak_text("Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich.")
@@ -101,83 +101,12 @@ class FirstTimeLoop(SpeechLoop):
         self.handler.setSpeechLoop(self.handler.getSpeechLoop("startLoop"))
 
 
-class StartLoop(SpeechLoop):
 
-    def __init__(self, handler):
-        super().__init__(handler)
-
-    def play(self) -> None:
-
-        self.handler.result = self.listen()
-                            
-        if "spiegel" in self.handler.result:
-            if (datetime.datetime.now().hour < 10):
-                self.speak_text("Guten Morgen {0}, komm putz dir die Zähne mit mir!".format(self.handler.user.name))
-            elif (datetime.datetime.now().hour > 18):
-                self.speak_text("Guten Abend {0}, komm putz dir die Zähne mit mir und danach kann ich dir eine Geschichte vorlesen!".format(self.handler.user.name))
-            else:
-                self.speak_text("Hallo {0}, wie kann ich dir helfen?".format(self.handler.user.name))
-            self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
             
 
-class MainLoop(SpeechLoop):
-    def __init__(self, handler):
-        super().__init__(handler)
 
-    def play(self) -> None:
-
-        self.handler.result = self.listen()
-
-        if any(x in self.handler.result for x in ("zeit", "uhr")):
-            self.speak_text("Es ist {0}".format(datetime.datetime.now().strftime("%H:%M Uhr")))
-
-        elif "datum" in self.handler.result:
-            self.speak_text("Heute ist der {0}".format(datetime.datetime.now().strftime("%d.%m.%Y")))
-
-        elif "geburtstag" in self.handler.result:
-            self.speak_text("Dein Geburtstag ist in {0} Tagen".format((datetime.datetime.now() - datetime.datetime.strptime(self.handler.user.birthday, "%d.%m.%Y")).days))
-
-        elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm")):
-            weather = self.find_weather()
-            self.speak_text("Das Wetter in {0} ist {1} Grad Celsius".format(weather["location"], weather["temperature"]))
-            if any(x in weather["info"] for x in ("rain", "drizzle", "shower")):
-                self.speak_text("Denk an deinen Regenschirm!")
-            if (weather["temperature"] < 10):
-                self.speak_text("Zieh dich warm an!")
-        
-        elif any(x in self.handler.result for x in ("erzähl", "les", "spiel", "geschichte", "märchen")):
-            
-            self.speak_text("Welches Märchen soll ich dir vorlesen? Ich kenne:")
-            for name in self.get_maerchen():
-                self.speak_text(name)
-            self.speak_text("Du kannst auch abbrechen indem du keins sagst.")
-            
-            self.handler.setSpeechLoop(self.handler.getSpeechLoop("storyLoop"))
             
 
-class StoryLoop(SpeechLoop):
-    
-    def __init__(self, handler):
-        super().__init__(handler)
 
-    def play(self) -> None:
-
-        self.handler.result = self.listen()
-
-        if (self.handler.result in self.get_maerchen()):
-            self.speak_text("Hier ist die Geschichte von {0}:".format(self.handler.result))
-            self.read_fairy_tale(self.handler.result)
-            self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
-            
-        
-        elif ("kein" in self.handler.result):
-            self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
-           
-        
-        else:
-            self.speak_text("Dieses Märchen kenne ich leider nicht. Ich kenne:")
-            for name in self.get_maerchen():
-                self.speak_text(name)
-            self.speak_text("Du kannst auch abbrechen indem du keins sagst.")
                 
             

@@ -1,5 +1,11 @@
 from user import User
-import speechLoop
+from speechLoops.speechLoop import SpeechLoop
+from speechLoops.fairytaleLoop import FairytaleLoop
+from speechLoops.mainLoop import MainLoop
+from speechLoops.welcomeLoop import WelcomeLoop
+from speechLoops.personalizeLoop import PersonalizeLoop
+
+
 '''
 This is the handler class for the magic mirror project.
 it contains the userdata and keeps track of the context.
@@ -12,29 +18,29 @@ Typical programflow is:
 class Handler:
 
     def __init__(self):
-        self.user = User('hans', 4, "01.01.2005")
+        self.user = User('', 0, '')
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
         self.response =""
         
-    def setSpeechLoop(self, speechLoop: speechLoop.SpeechLoop)-> None:
+    def setSpeechLoop(self, speechLoop: SpeechLoop)-> None:
         self.speechLoop = speechLoop
     
-    def updateSpeechLoopDict(self,key:str, speechLoop:speechLoop.SpeechLoop) -> None:
+    def updateSpeechLoopDict(self,key:str, speechLoop:SpeechLoop) -> None:
         self.speechLoopDict.update({key: speechLoop})
 
-    def getSpeechLoop(self, key:str) -> speechLoop.SpeechLoop:
+    def getSpeechLoop(self, key:str) -> SpeechLoop:
         return self.speechLoopDict[key]
 
     def fillDict(self) -> None:
-        self.updateSpeechLoopDict("startLoop", speechLoop.StartLoop(self))
-        self.updateSpeechLoopDict("mainLoop", speechLoop.MainLoop(self))
-        self.updateSpeechLoopDict("storyLoop", speechLoop.StoryLoop(self))
-        self.updateSpeechLoopDict("firstTimeLoop", speechLoop.FirstTimeLoop(self))
+        self.updateSpeechLoopDict("welcomeLoop", WelcomeLoop(self))
+        self.updateSpeechLoopDict("mainLoop", MainLoop(self))
+        self.updateSpeechLoopDict("fairytaleLoop", FairytaleLoop(self))
+        self.updateSpeechLoopDict("personalizeLoop", PersonalizeLoop(self))
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["firstTimeLoop"]
+        self.speechLoop = self.speechLoopDict["personalizeLoop"]
         while(1):
             self.speechLoop.play()
