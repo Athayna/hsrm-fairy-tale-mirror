@@ -8,7 +8,8 @@ class ImagePlayer:
         self.wWidth = self.window.winfo_screenwidth()
         self.wHeight = self.window.winfo_screenheight()
         self.imageDict = dict()
-        self.image = Image.open("./cat.png")
+        self.image = Image.open("./pictures/cat.png")
+        self.imageTxt = "cat"
         self.path = "./pictures/"
         self.imageToDisplay = ImageTk.PhotoImage(self.image)
 
@@ -16,6 +17,8 @@ class ImagePlayer:
         self.imageDict.update({"cat": "cat.png"})
         self.imageDict.update({"dog": "dog.jpg"})
         self.imageDict.update({"snow_white": "snow_white.png"})
+        self.imageDict.update({"ende": "ende.jpg"})
+        self.imageDict.update({"blaubarsch": "blaubarsch.jpg"})
 
     def start(self):
         self.fillDict()
@@ -23,8 +26,9 @@ class ImagePlayer:
         self.setImage("cat")
         self.window.mainloop()
 
-    def setImage(self, image):
-        self.image = Image.open(f'{self.path}{self.imageDict.get(image)}')
+    def setImage(self, imageKey:str):
+        self.imageTxt = imageKey
+        self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
         for img in self.window.winfo_children():
             img.destroy()
         self.imgToDisplay = ImageTk.PhotoImage(self.image)

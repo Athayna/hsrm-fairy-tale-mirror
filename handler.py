@@ -1,3 +1,4 @@
+from ImagePlayer import ImagePlayer
 from user import User
 from speechLoops.speechLoop import SpeechLoop
 from speechLoops.fairytaleLoop import FairytaleLoop
@@ -23,6 +24,7 @@ class Handler:
         self.speechLoopDict = dict()
         self.speechLoop = None
         self.response =""
+        self.imagePlayer = ImagePlayer()
         
     def setSpeechLoop(self, speechLoop: SpeechLoop)-> None:
         self.speechLoop = speechLoop
@@ -41,6 +43,6 @@ class Handler:
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["personalizeLoop"]
-        while(1):
+        self.speechLoop = self.speechLoopDict["mainLoop"]
+        while(self.response != "abbruch"):
             self.speechLoop.play()

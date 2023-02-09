@@ -9,7 +9,10 @@ class MainLoop(SpeechLoop):
 
         self.handler.result = self.listen()
 
-        if any(x in self.handler.result for x in ("zeit", "uhr")):
+        if ( self.handler.result == "abbrechen"):
+            pass
+
+        elif any(x in self.handler.result for x in ("zeit", "uhr")):
             self.speak_text(f'Es ist {datetime.datetime.now().strftime("%H:%M Uhr")}')
 
         elif "datum" in self.handler.result:
@@ -28,9 +31,23 @@ class MainLoop(SpeechLoop):
         
         elif any(x in self.handler.result for x in ("erzähl", "les", "spiel", "geschichte", "märchen")):
             
-            self.speak_text("Welches Märchen soll ich dir vorlesen? Ich kenne:")
-            for name in self.get_maerchen():
-                self.speak_text(name)
-            self.speak_text("Du kannst auch abbrechen indem du keins sagst.")
+            self.speak_text("Möchtest du wissen, welche Märchen ich alle kenne?")
+            while(1):
+                self.handler.result = self.listen()
+                if (x in self.handler.result for x in ("ja", "genau", "gerne")):
+                    self.speak_text("Ich kenne")
+                    for name in self.get_maerchen():
+                        self.speak_text(name)
+                    break
+                elif (x in self.handler.result for x in ("nein", "nicht", "nö")):
+                    break
+                else:
+                    self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Märchen ich kenne?")
+            self.speak_text("Welches Märchen soll ich dir vorlesen?")
+            self.speak_text("Du kannst auch abbrechen, indem du keins sagst.")
             
-            self.handler.setSpeechLoop(self.handler.getSpeechLoop("storyLoop"))
+            self.handler.setSpeechLoop(self.handler.getSpeechLoop("fairytaleLoop"))
+
+        
+        else:
+            self.speak_text("Ich bin mir nicht sicher, ob ich dich nicht richtig verstanden habe oder ich den Befhel nicht kenne. Was brauchst du?")

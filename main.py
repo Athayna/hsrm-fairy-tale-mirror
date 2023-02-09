@@ -11,8 +11,7 @@ from ImagePlayer import ImagePlayer
 def main():
     handler = Handler()
     threading.Thread(target=handler.start, daemon=True).start()
-    imageHandler = ImagePlayer()
-    imageHandler.start()
+    handler.imagePlayer.start()
 
 if __name__ == "__main__":
     main()

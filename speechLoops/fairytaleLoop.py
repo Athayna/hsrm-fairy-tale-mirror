@@ -20,7 +20,16 @@ class FairytaleLoop(SpeechLoop):
            
         
         else:
-            self.speak_text("Dieses Märchen kenne ich leider nicht. Ich kenne:")
-            for name in self.get_maerchen():
-                self.speak_text(name)
-            self.speak_text("Du kannst auch abbrechen indem du keins sagst.")
+            self.speak_text("Dieses Märchen kenne ich leider nicht. Möchtest du wissen, welche Märchen ich kenne?")
+            while(1):
+                self.handler.result = self.listen()
+                if (x in self.handler.result for x in ("ja", "genau", "gerne")):
+                    self.speak_text("Ich kenne")
+                    for name in self.get_maerchen():
+                        self.speak_text(name)
+                    break
+                elif (x in self.handler.result for x in ("nein", "nicht", "nö")):
+                    break
+                else:
+                    self.speak_text("Ich habe dich leider nicht verstanden. Welches Märchen möchtest du denn gerne hören?")
+            self.speak_text("Welches Märchen möchtest du denn gerne hören? Du kannst auch abbrechen, indem du keins sagst.")

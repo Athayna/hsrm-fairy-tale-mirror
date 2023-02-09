@@ -7,6 +7,7 @@ import datetime
 import requests
 import os
 from bs4 import BeautifulSoup
+import re
 
 ######################################## BASE LOOP - ABSTRACT ########################################
 
@@ -44,7 +45,7 @@ class SpeechLoop():
 
     def get_maerchen(self):
         list = []
-        for file in os.listdir(os.getcwd() + "../maerchen"):
+        for file in os.listdir(os.getcwd() + "\\maerchen"):
             if file.endswith(".txt"):
                 list.append(file[:-4])
         return list
@@ -68,12 +69,22 @@ class SpeechLoop():
 
     def read_fairy_tale(self, title):
         try:
-            with open(os.getcwd() + "/maerchen/" + title + ".txt") as file:
-                line = file.readline()
-                while (line):
-                    self.speak_text(file.readline())
+            with open(os.getcwd() + "\\maerchen\\" + title + ".txt") as file:
+                lines = file.readlines()
+                for line in lines:
+                    print(line)
+                    self.findPicture(line)
+                    self.speak_text(line)
         except FileNotFoundError:
             print ("File not found")
+
+
+    def findPicture(self, line:str)-> None:
+        for word in line.split():
+            word = re.sub("[^A-Za-z]","",word.lower())
+            if word in self.handler.imagePlayer.imageDict and word != self.handler.imagePlayer.imageTxt:
+                self.handler.imagePlayer.setImage(word)
+                return
 
 ######################################## DIFFERENT LOOPS ########################################
 
