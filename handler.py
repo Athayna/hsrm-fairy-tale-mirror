@@ -23,7 +23,7 @@ class Handler:
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
-        self.response =""
+        self.result =""
         self.imagePlayer = ImagePlayer()
         
     def setSpeechLoop(self, speechLoop: SpeechLoop)-> None:
@@ -41,8 +41,13 @@ class Handler:
         self.updateSpeechLoopDict("fairytaleLoop", FairytaleLoop(self))
         self.updateSpeechLoopDict("personalizeLoop", PersonalizeLoop(self))
 
+    def checkForAbort(self) -> bool:
+        if (any(x in self.result for x in ("abbrechen", "ende", "stop"))):
+            return True
+        return False
+
     def start(self) -> None:
         self.fillDict()
         self.speechLoop = self.speechLoopDict["mainLoop"]
-        while(self.response != "abbruch"):
+        while not self.checkForAbort():
             self.speechLoop.play()

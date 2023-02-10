@@ -8,6 +8,9 @@ import requests
 import os
 from bs4 import BeautifulSoup
 import re
+import multiprocessing
+import subprocess
+from signal import SIGINT
 
 ######################################## BASE LOOP - ABSTRACT ########################################
 
@@ -26,9 +29,9 @@ class SpeechLoop():
                     print("Listening...")
                     audio = r.listen(source)
                     print("Interpreting input")
-                    self.handler.result = r.recognize_google(audio, language="de-DE").lower()
-                    print(f'Understood {self.handler.result}, returning self.handler.result')
-                    return self.handler.result.lower()
+                    result = r.recognize_google(audio, language="de-DE").lower()
+                    print(f'Understood {result}, returning self.handler.result')
+                    return result.lower()
                 except sr.RequestError as e:
                     print(f'Could not request self.handler.results; {e}')
                 except sr.UnknownValueError:
@@ -72,9 +75,14 @@ class SpeechLoop():
             with open(os.getcwd() + "\\maerchen\\" + title + ".txt") as file:
                 lines = file.readlines()
                 for line in lines:
-                    print(line)
                     self.findPicture(line)
-                    self.speak_text(line)
+                    readProcess = multiprocessing.Process(target=speak_tale, args=[line])          
+                    readProcess.start()
+                    listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid])
+                    readProcess.join()
+                    listenProcess.terminate()
+                        
+                    
         except FileNotFoundError:
             print ("File not found")
 
@@ -88,6 +96,40 @@ class SpeechLoop():
 
 ######################################## DIFFERENT LOOPS ########################################
 
+def speak_tale(command):
+    tts = gTTS(text=command, lang='de', slow=False)
+    tts.save('tts.mp3')
+    playsound('tts.mp3')
+    os.remove('tts.mp3')
+
+
+
+def listenToKill(thread):
+
+    def listenWithoutClass():
+        with sr.Microphone() as source:
+            r = sr.Recognizer()
+            while(1):
+                try:
+                    print("Adjusting ambient noise")
+                    r.adjust_for_ambient_noise(source, duration=0.5)
+                    print("Listening...")
+                    audio = r.listen(source)
+                    print("Interpreting input")
+                    result = r.recognize_google(audio, language="de-DE").lower()
+                    print(f'Understood {result}, returning self.handler.result')
+                    return result.lower()
+                except sr.RequestError as e:
+                    print(f'Could not request self.handler.results; {e}')
+                except sr.UnknownValueError:
+                    print("unknown error occurred")    
+    
+    while(1):
+        result = listenWithoutClass()
+        if result == "Stopp" or result == "abbrechen":
+            os.kill(thread, SIGINT)
+            return
+            
 class FirstTimeLoop(SpeechLoop):
 
     def __init__(self, handler):

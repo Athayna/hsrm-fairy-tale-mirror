@@ -2,14 +2,18 @@ from speechLoops.speechLoop import SpeechLoop
 import datetime
 
 class MainLoop(SpeechLoop):
+
     def __init__(self, handler):
+
         super().__init__(handler)
 
     def play(self) -> None:
 
+        print("MainLoop started")
+
         self.handler.result = self.listen()
 
-        if ( self.handler.result == "abbrechen"):
+        if self.handler.checkForAbort():
             pass
 
         elif any(x in self.handler.result for x in ("zeit", "uhr")):
@@ -31,15 +35,15 @@ class MainLoop(SpeechLoop):
         
         elif any(x in self.handler.result for x in ("erzähl", "les", "spiel", "geschichte", "märchen")):
             
-            self.speak_text("Möchtest du wissen, welche Märchen ich alle kenne?")
+            self.speak_text("Möchtest du wissen, welche Märchen ich kenne?")
             while(1):
                 self.handler.result = self.listen()
-                if (x in self.handler.result for x in ("ja", "genau", "gerne")):
+                if any(x in self.handler.result for x in ("ja", "genau", "gerne")):
                     self.speak_text("Ich kenne")
                     for name in self.get_maerchen():
                         self.speak_text(name)
                     break
-                elif (x in self.handler.result for x in ("nein", "nicht", "nö")):
+                elif any(x in self.handler.result for x in ("nein", "nicht", "nö")):
                     break
                 else:
                     self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Märchen ich kenne?")
@@ -48,6 +52,5 @@ class MainLoop(SpeechLoop):
             
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("fairytaleLoop"))
 
-        
         else:
             self.speak_text("Ich bin mir nicht sicher, ob ich dich nicht richtig verstanden habe oder ich den Befhel nicht kenne. Was brauchst du?")

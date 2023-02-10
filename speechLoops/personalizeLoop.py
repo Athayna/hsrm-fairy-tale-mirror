@@ -17,11 +17,11 @@ class PersonalizeLoop(SpeechLoop):
             tempName = self.listen()
             self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}')
             self.handler.result = self.listen()
-            if (x in self.handler.result for x in ("ja", "genau", "richtig")):
+            if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
                 self.handler.user.name = tempName
                 self.speak_text(f'Hallo {self.handler.user.name}, es freut mich dich kennenzulernen!')
                 break
-            elif (x in self.handler.result for x in ("nein", "falsch", "nö")):
+            elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                 self.speak_text("Tut mir leid. Wie heißt du denn?")
             elif ("Sag ich nicht" in self.handler.result):
                 self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.")
@@ -38,11 +38,11 @@ class PersonalizeLoop(SpeechLoop):
             if not tempAge.isdecimal():
                 self.speak_text(f'Du bist {tempAge} Jahre, stimmt das?')
                 self.handler.result = self.listen()
-                if (x in self.handler.result for x in ("ja", "genau", "richtig")):
+                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
                     self.handler.user.age = tempAge
                     self.speak_text("Du bist ja schon richtig groß.")
                     break
-                elif (x in self.handler.result for x in ("nein", "falsch", "nö")):
+                elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                     self.speak_text("Tut mir leid. Wie alt bist du denn?")
             elif ("Sag ich nicht" in tempAge):
                 self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal dein Alter.")
@@ -60,11 +60,11 @@ class PersonalizeLoop(SpeechLoop):
             tempLieblingsfarbe = self.listen()
             self.speak_text(f'Ist es richtig, dass {tempLieblingsfarbe} deine Lieblingsfarbe ist?')
             self.handler.result = self.listen()
-            if (x in self.handler.result for x in ("ja", "genau", "richtig")):
+            if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
                 self.handler.user.color = tempLieblingsfarbe
                 self.speak_text("Die Farbe finde ich auch total schön.")
                 break
-            elif (x in self.handler.result for x in ("nein", "falsch", "nö")):
+            elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                 self.speak_text("Tut mir leid. Was ist denn deine Lieblingsfarbe?")
             elif ("Sag ich nicht" in self.handler.result):
                 self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal deine Lieblingsfarbe.")
