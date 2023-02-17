@@ -27,8 +27,10 @@ class SpeechLoop():
                     print("Adjusting ambient noise")
                     r.adjust_for_ambient_noise(source, duration=0.5)
                     print("Listening...")
+                    self.handler.imagePlayer.setImage("dog")
                     audio = r.listen(source)
                     print("Interpreting input")
+                    self.handler.imagePlayer.setImage("cat")
                     result = r.recognize_google(audio, language="de-DE").lower()
                     print(f'Understood {result}, returning self.handler.result')
                     return result.lower()
@@ -38,10 +40,13 @@ class SpeechLoop():
                     print("unknown error occurred")        
 
     def speak_text(self, command):
-        tts = gTTS(text=command, lang='de', slow=False)
-        tts.save('tts.mp3')
-        playsound('tts.mp3')
-        os.remove('tts.mp3')
+        readProcess = multiprocessing.Process(target=speak_tale, args=[command])          
+        readProcess.start()
+        listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid])
+        listenProcess.start()
+        readProcess.join()
+        if listenProcess.is_alive():
+            listenProcess.terminate()
 
     def play(self) -> None:
         pass
@@ -108,7 +113,7 @@ def speak_tale(command):
     playsound('tts.mp3')
     os.remove('tts.mp3')
 
-def listenToKill(thread, killswitch):
+def listenToKill(thread, *killswitch):
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
@@ -131,8 +136,40 @@ def listenToKill(thread, killswitch):
         result = listenWithoutClass()
         if "stop" in result or "abbrechen" in result:
             os.kill(thread, SIGINT)
-            killswitch.set()
+            if killswitch:
+                killswitch[0].set()
             return
+
+
+# def listenToKill(thread, watchListWords, *killswitch):
+#     def listenWithoutClass():
+#         with sr.Microphone() as source:
+#             r = sr.Recognizer()
+#             while(1):
+#                 try:
+#                     print("Adjusting ambient noise")
+#                     r.adjust_for_ambient_noise(source, duration=0.5)
+#                     print("Listening...")
+#                     audio = r.listen(source)
+#                     print("Interpreting input")
+#                     result = r.recognize_google(audio, language="de-DE").lower()
+#                     print(f'Understood {result}, returning self.handler.result')
+#                     return result.lower()
+#                 except sr.RequestError as e:
+#                     print(f'Could not request self.handler.results; {e}')
+#                 except sr.UnknownValueError:
+#                     print("unknown error occurred")    
+    
+#     while(1):
+#         result = listenWithoutClass()
+#         if "stop" in result or "abbrechen" in result:
+#             os.kill(thread, SIGINT)
+#             if killswitch:
+#                 killswitch[0].set()
+#             return
+#         if any(word in result for word in watchListWords):
+#             return            
+
             
 class FirstTimeLoop(SpeechLoop):
 

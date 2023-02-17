@@ -40,8 +40,10 @@ class MainLoop(SpeechLoop):
                 self.handler.result = self.listen()
                 if any(x in self.handler.result for x in ("ja", "genau", "gerne")):
                     self.speak_text("Ich kenne")
+                    alleMaerchen = ""
                     for name in self.get_maerchen():
-                        self.speak_text(name)
+                        alleMaerchen += name + ", "
+                    self.speak_text(alleMaerchen)
                     break
                 elif any(x in self.handler.result for x in ("nein", "nicht", "nö")):
                     break
