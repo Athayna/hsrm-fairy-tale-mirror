@@ -78,10 +78,16 @@ class SpeechLoop():
                     self.findPicture(line)
                     readProcess = multiprocessing.Process(target=speak_tale, args=[line])          
                     readProcess.start()
-                    listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid])
+                    killswitch = multiprocessing.Event()
+                    listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, killswitch])
+                    listenProcess.start()
                     readProcess.join()
-                    listenProcess.terminate()
-                        
+                    if listenProcess.is_alive():
+                        listenProcess.terminate()
+                    if killswitch.is_set():
+                        break
+
+ 
                     
         except FileNotFoundError:
             print ("File not found")
@@ -102,10 +108,7 @@ def speak_tale(command):
     playsound('tts.mp3')
     os.remove('tts.mp3')
 
-
-
-def listenToKill(thread):
-
+def listenToKill(thread, killswitch):
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
@@ -126,8 +129,9 @@ def listenToKill(thread):
     
     while(1):
         result = listenWithoutClass()
-        if result == "Stopp" or result == "abbrechen":
+        if "stop" in result or "abbrechen" in result:
             os.kill(thread, SIGINT)
+            killswitch.set()
             return
             
 class FirstTimeLoop(SpeechLoop):

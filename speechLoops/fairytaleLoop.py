@@ -17,7 +17,11 @@ class FairytaleLoop(SpeechLoop):
 
         self.handler.result = self.listen()
 
-        if (self.handler.result in self.get_maerchen()):
+        if any(x in self.handler.result for x in self.get_maerchen() ):
+
+            for x in self.get_maerchen:
+                    if x in self.handler.result:
+                        self.handler.result = x
             self.speak_text(f'Hier ist die Geschichte von {self.handler.result}:')
             print(self.handler)
             self.read_fairy_tale(self.handler.result)
