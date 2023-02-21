@@ -1,25 +1,24 @@
 import speech_recognition as sr
-import handler
 from gtts import gTTS
 from playsound import playsound
-from tempfile import NamedTemporaryFile
-import datetime
 import requests
 import os
 from bs4 import BeautifulSoup
 import re
 import multiprocessing
-import subprocess
 from signal import SIGINT
 
 ######################################## BASE LOOP - ABSTRACT ########################################
 
 class SpeechLoop():
+    """Abstract class for speech loops"""
 
-    def __init__(self, handler):
+    def __init__(self, handler) -> None:
         self.handler = handler
 
-    def listen(self):
+    def listen(self) -> str:
+        """Abstract method for listening to user input"""
+        
         with sr.Microphone() as source:
             r = sr.Recognizer()
             while(1):
@@ -39,26 +38,31 @@ class SpeechLoop():
                 except sr.UnknownValueError:
                     print("unknown error occurred")        
 
-    def speak_text(self, command):
+    def speak_text(self, command) -> None:
         readProcess = multiprocessing.Process(target=speak_tale, args=[command])          
         readProcess.start()
-        listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid])
+        conn1, conn2 = multiprocessing.Pipe()
+        listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, conn2])
         listenProcess.start()
-        readProcess.join()
-        if listenProcess.is_alive():
+        while(readProcess.is_alive()):
+            if conn1.poll(0.1):
+                print("found word")
+                self.handler.result = conn1.recv()
+                break
+        else:
             listenProcess.terminate()
 
     def play(self) -> None:
         pass
 
-    def get_maerchen(self):
+    def get_maerchen(self) -> list:
         list = []
         for file in os.listdir(os.getcwd() + "\\maerchen"):
             if file.endswith(".txt"):
                 list.append(file[:-4])
         return list
 
-    def find_weather(self):
+    def find_weather(self) -> dict:
         city_name = 'Wiesbaden'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -75,7 +79,7 @@ class SpeechLoop():
             temperature = soup.select('#wob_tm')[0].getText().strip()
         )
 
-    def read_fairy_tale(self, title):
+    def read_fairy_tale(self, title) -> None:
         try:
             with open(os.getcwd() + "\\maerchen\\" + title + ".txt") as file:
                 lines = file.readlines()
@@ -84,21 +88,24 @@ class SpeechLoop():
                     readProcess = multiprocessing.Process(target=speak_tale, args=[line])          
                     readProcess.start()
                     killswitch = multiprocessing.Event()
-                    listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, killswitch])
+                    conn1, conn2 = multiprocessing.Pipe()
+                    listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, conn2, killswitch])
                     listenProcess.start()
-                    readProcess.join()
-                    if listenProcess.is_alive():
+                    while(readProcess.is_alive()):
+                        if conn1.poll(0.100):
+                            print("got connection result")
+                            self.handler.result = conn1.recv()
+                            break
+                    else:
+                        print("kill listen process")
                         listenProcess.terminate()
                     if killswitch.is_set():
-                        break
-
- 
+                        break  
                     
         except FileNotFoundError:
             print ("File not found")
 
-
-    def findPicture(self, line:str)-> None:
+    def findPicture(self, line:str) -> None:
         for word in line.split():
             word = re.sub("[^A-Za-z]","",word.lower())
             if word in self.handler.imagePlayer.imageDict and word != self.handler.imagePlayer.imageTxt:
@@ -107,100 +114,48 @@ class SpeechLoop():
 
 ######################################## DIFFERENT LOOPS ########################################
 
-def speak_tale(command):
+watchListWords = {
+    "abbruch": ["abbruch", "abbrechen", "stop"]
+}
+
+def speak_tale(command) -> None:
     tts = gTTS(text=command, lang='de', slow=False)
     tts.save('tts.mp3')
     playsound('tts.mp3')
     os.remove('tts.mp3')
 
-def listenToKill(thread, *killswitch):
+def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
             while(1):
                 try:
-                    print("Adjusting ambient noise")
+                    print("Adjusting ambient noise in kill")
                     r.adjust_for_ambient_noise(source, duration=0.5)
                     print("Listening...")
                     audio = r.listen(source)
-                    print("Interpreting input")
+                    print("Interpreting input in kill")
                     result = r.recognize_google(audio, language="de-DE").lower()
-                    print(f'Understood {result}, returning self.handler.result')
+                    print(f'Understood {result}, returning self.handler.result in kill')
                     return result.lower()
                 except sr.RequestError as e:
-                    print(f'Could not request self.handler.results; {e}')
+                    print(f'Could not request self.handler.results; {e} in kill')
                 except sr.UnknownValueError:
-                    print("unknown error occurred")    
+                    print("unknown error occurred in kill")    
     
     while(1):
         result = listenWithoutClass()
-        if "stop" in result or "abbrechen" in result:
-            os.kill(thread, SIGINT)
-            if killswitch:
-                killswitch[0].set()
-            return
-
-
-# def listenToKill(thread, watchListWords, *killswitch):
-#     def listenWithoutClass():
-#         with sr.Microphone() as source:
-#             r = sr.Recognizer()
-#             while(1):
-#                 try:
-#                     print("Adjusting ambient noise")
-#                     r.adjust_for_ambient_noise(source, duration=0.5)
-#                     print("Listening...")
-#                     audio = r.listen(source)
-#                     print("Interpreting input")
-#                     result = r.recognize_google(audio, language="de-DE").lower()
-#                     print(f'Understood {result}, returning self.handler.result')
-#                     return result.lower()
-#                 except sr.RequestError as e:
-#                     print(f'Could not request self.handler.results; {e}')
-#                 except sr.UnknownValueError:
-#                     print("unknown error occurred")    
-    
-#     while(1):
-#         result = listenWithoutClass()
-#         if "stop" in result or "abbrechen" in result:
-#             os.kill(thread, SIGINT)
-#             if killswitch:
-#                 killswitch[0].set()
-#             return
-#         if any(word in result for word in watchListWords):
-#             return            
-
-            
-class FirstTimeLoop(SpeechLoop):
-
-    def __init__(self, handler):
-        super().__init__(handler)
-
-    def play(self) -> None:
-        # self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr.")
-        # self.speak_text("Zuerst möchte ich dich kennenlernen.")
-        self.speak_text("Wer bist du?")
-        self.handler.result = self.listen()
-        self.handler.user.name = self.handler.result
-        self.speak_text(f'Hallo {self.handler.user.name}')
-        self.speak_text("Wann hast du Geburtstag?")
-        self.handler.result = self.listen()
-        self.handler.user.birthday = self.handler.result
-        self.handler.user.age = datetime.datetime.now().year - int(self.handler.user.birthday.split(".")[2])
-        self.speak_text(f'Du bist also {self.handler.user.age} Jahre alt.')
-
-        # self.speak_text("Das war alles was ich über dich wissen wollte. Ich wünsche dir viel Spaß mit mir.")
-        # self.speak_text("Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich.")
-
-        self.handler.setSpeechLoop(self.handler.getSpeechLoop("startLoop"))
-
-
-
-            
-
-
-            
-
-
-                
-            
+        print (result)
+        print (watchListWords)
+        for word in watchListWords:
+            if word in result:
+                print("found matching word")
+                pipeconnection.send(word)
+                if killswitch:
+                    killswitch.set()
+                try:
+                    while(pipeconnection.poll(0.100)):
+                        pass
+                finally:
+                    os.kill(thread, SIGINT)
+                    return

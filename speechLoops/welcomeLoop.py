@@ -2,11 +2,13 @@ from speechLoops.speechLoop import SpeechLoop
 import datetime
 
 class WelcomeLoop(SpeechLoop):
+    """This is the welcome loop. It is the first loop that is called when the program starts."""
 
-    def __init__(self, handler):
+    def __init__(self, handler) -> None:
         super().__init__(handler)
 
     def play(self) -> None:
+        """This method is called when the loop is started. It is used to start the speech recognition and to set the next loop."""
 
         self.handler.result = self.listen()
                             

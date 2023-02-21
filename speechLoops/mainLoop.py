@@ -2,15 +2,12 @@ from speechLoops.speechLoop import SpeechLoop
 import datetime
 
 class MainLoop(SpeechLoop):
+    """MainLoop is the main loop of the program. It is the second loop that is started and the last one that is stopped."""
 
-    def __init__(self, handler):
-
+    def __init__(self, handler) -> None:
         super().__init__(handler)
 
     def play(self) -> None:
-
-        print("MainLoop started")
-
         self.handler.result = self.listen()
 
         if self.handler.checkForAbort():
@@ -21,9 +18,6 @@ class MainLoop(SpeechLoop):
 
         elif "datum" in self.handler.result:
             self.speak_text(f'Heute ist der {datetime.datetime.now().strftime("%d.%m.%Y")}')
-
-        # elif "geburtstag" in self.handler.result:
-        #     self.speak_text(f'Dein Geburtstag ist in {(datetime.datetime.now() - datetime.datetime.strptime(self.handler.user.birthday, "%d.%m.%Y")).days)} Tagen')
 
         elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm")):
             weather = self.find_weather()
@@ -38,21 +32,29 @@ class MainLoop(SpeechLoop):
             self.speak_text("Möchtest du wissen, welche Märchen ich kenne?")
             while(1):
                 self.handler.result = self.listen()
-                if any(x in self.handler.result for x in ("ja", "genau", "gerne")):
+                if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.speak_text("Ich kenne")
                     alleMaerchen = ""
                     for name in self.get_maerchen():
                         alleMaerchen += name + ", "
                     self.speak_text(alleMaerchen)
                     break
-                elif any(x in self.handler.result for x in ("nein", "nicht", "nö")):
+                elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
                     break
                 else:
                     self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Märchen ich kenne?")
             self.speak_text("Welches Märchen soll ich dir vorlesen?")
-            self.speak_text("Du kannst auch abbrechen, indem du keins sagst.")
             
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("fairytaleLoop"))
 
         else:
-            self.speak_text("Ich bin mir nicht sicher, ob ich dich nicht richtig verstanden habe oder ich den Befhel nicht kenne. Was brauchst du?")
+            self.speak_text("Ich habe dich nicht verstanden. Möchtest du wissen, was ich alles kann?")
+            while(1):
+                self.handler.result = self.listen()
+                if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
+                    self.speak_text("Ich kann Geschichten erzählen, die Uhrzeit, das Datum oder das Wetter sagen, ...")
+                    break
+                elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
+                    break
+                else:
+                    self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, was ich alles kann?")

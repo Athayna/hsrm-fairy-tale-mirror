@@ -1,20 +1,23 @@
 from speechLoops.speechLoop import SpeechLoop
 
 class PersonalizeLoop(SpeechLoop):
+    """SpeechLoop for user personalization."""
 
-    def __init__(self, handler):
+    def __init__(self, handler) -> None:
         super().__init__(handler)
 
     def play(self) -> None:
         ################################################ KENNENLERNEN - NAME ################################################
         # Name? -> String -> Richtig/Falsch; alt: "Sag ich nicht"
         
-        #self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr."\
-        #                "Zuerst möchte ich dich ein wenig kennenlernen."\
-        #                "Wie heißt du denn?")
-        self.speak_text("Sag Name")
+        self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr."\
+                        "Zuerst möchte ich dich ein wenig kennenlernen."\
+                        "Wie heißt du denn?")
         while(1):
             tempName = self.listen()
+            if ("Sag ich nicht" in tempName):
+                self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.")
+                tempName = self.listen()
             self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}')
             self.handler.result = self.listen()
             if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
@@ -23,8 +26,6 @@ class PersonalizeLoop(SpeechLoop):
                 break
             elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                 self.speak_text("Tut mir leid. Wie heißt du denn?")
-            elif ("Sag ich nicht" in self.handler.result):
-                self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.")
             else:
                 self.speak_text("Ich habe dich leider nicht verstanden. Wie heißt du? Du kannst mir auch nur einen Spitznamen nennen mit dem ich dich ansprechen kann.")
         
@@ -35,11 +36,11 @@ class PersonalizeLoop(SpeechLoop):
 
         while(1):
             tempAge = self.listen()
-            if not tempAge.isdecimal():
-                self.speak_text(f'Du bist {tempAge} Jahre, stimmt das?')
+            if not int(tempAge).isdecimal():
+                self.speak_text(f'Du bist also {tempAge} Jahre, stimmt das?')
                 self.handler.result = self.listen()
                 if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
-                    self.handler.user.age = tempAge
+                    self.handler.user.age = int(tempAge)
                     self.speak_text("Du bist ja schon richtig groß.")
                     break
                 elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
@@ -50,7 +51,6 @@ class PersonalizeLoop(SpeechLoop):
             else:
                 self.speak_text("Ich habe dich leider nicht verstanden. Wie alt bist du? Wenn du mir das nicht verraten möchtest, sag einfach: Sag ich nicht.")
 
-        
         ################################################ KENNENLERNEN - Lieblingsfarbe ################################################
         # Lieblingsfarbe? -> Zahl -> Richtig/Falsch; alt: "Sag ich nicht"
 
@@ -58,6 +58,9 @@ class PersonalizeLoop(SpeechLoop):
 
         while(1):
             tempLieblingsfarbe = self.listen()
+            if ("Sag ich nicht" in tempLieblingsfarbe):
+                self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal deine Lieblingsfarbe.")
+                break
             self.speak_text(f'Ist es richtig, dass {tempLieblingsfarbe} deine Lieblingsfarbe ist?')
             self.handler.result = self.listen()
             if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
@@ -66,9 +69,6 @@ class PersonalizeLoop(SpeechLoop):
                 break
             elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                 self.speak_text("Tut mir leid. Was ist denn deine Lieblingsfarbe?")
-            elif ("Sag ich nicht" in self.handler.result):
-                self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal deine Lieblingsfarbe.")
-                break 
             else:
                 self.speak_text("Ich habe dich leider nicht verstanden. Was ist deine Lieblingsfarbe?")
 

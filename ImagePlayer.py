@@ -1,9 +1,10 @@
 import tkinter as tk
 from PIL import ImageTk, Image
-import sys
 
 class ImagePlayer:
-    def __init__(self):
+    """ImagePlayer class that displays images in fullscreen mode."""
+
+    def __init__(self) -> None:
         self.window = tk.Tk()
         self.wWidth = self.window.winfo_screenwidth()
         self.wHeight = self.window.winfo_screenheight()
@@ -20,13 +21,13 @@ class ImagePlayer:
         self.imageDict.update({"ende": "ende.jpg"})
         self.imageDict.update({"blaubarsch": "blaubarsch.jpg"})
 
-    def start(self):
+    def start(self) -> None:
         self.fillDict()
         self.window.attributes("-fullscreen", True)
         self.setImage("cat")
         self.window.mainloop()
 
-    def setImage(self, imageKey:str):
+    def setImage(self, imageKey:str) -> None:
         self.imageTxt = imageKey
         self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
         for img in self.window.winfo_children():
@@ -35,8 +36,8 @@ class ImagePlayer:
         labelToAdd = tk.Label(image=self.imgToDisplay)
         labelToAdd.place(relx=0.5, rely=0.5, anchor="center")
 
-    def resizeImage(self, image):
-        iWidth, iHeight = image.size # (breite | höhe)
+    def resizeImage(self, image:Image) -> Image:
+        iWidth, iHeight = image.size
         if((self.wWidth / iHeight) < (self.wHeight / iHeight)):
             return image.resize(self.wWidth, (int(iHeight * (self.wWidth / iWidth))), Image.Resampling.LANCZOS)
         else:

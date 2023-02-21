@@ -6,19 +6,17 @@ from speechLoops.mainLoop import MainLoop
 from speechLoops.welcomeLoop import WelcomeLoop
 from speechLoops.personalizeLoop import PersonalizeLoop
 
-
-'''
-This is the handler class for the magic mirror project.
-it contains the userdata and keeps track of the context.
-there should be an active speechLoop at any given time.
-the speechLoops itself are responsible for chaining the next Loop.
-Typical programflow is:
-    Loopstart -> listen -> process -> other loop gets chained in handler -> return -> nextLoop
-'''
-
 class Handler:
+    '''
+    This is the handler class for the magic mirror project.
+    it contains the userdata and keeps track of the context.
+    there should be an active speechLoop at any given time.
+    the speechLoops itself are responsible for chaining the next Loop.
+    Typical programflow is:
+        Loopstart -> listen -> process -> other loop gets chained in handler -> return -> nextLoop
+    '''
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.user = User('', 0, '')
         self.context = dict()
         self.speechLoopDict = dict()
@@ -26,10 +24,10 @@ class Handler:
         self.result =""
         self.imagePlayer = ImagePlayer()
         
-    def setSpeechLoop(self, speechLoop: SpeechLoop)-> None:
+    def setSpeechLoop(self, speechLoop:SpeechLoop) -> None:
         self.speechLoop = speechLoop
     
-    def updateSpeechLoopDict(self,key:str, speechLoop:SpeechLoop) -> None:
+    def updateSpeechLoopDict(self, key:str, speechLoop:SpeechLoop) -> None:
         self.speechLoopDict.update({key: speechLoop})
 
     def getSpeechLoop(self, key:str) -> SpeechLoop:

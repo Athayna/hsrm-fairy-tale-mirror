@@ -1,16 +1,9 @@
 from speechLoops.speechLoop import SpeechLoop
-import threading
-import os
-from gtts import gTTS
-from playsound import playsound
-import multiprocessing
-import re
-import copy
-
 
 class FairytaleLoop(SpeechLoop):
+    """SpeechLoop for the fairytale mode."""
     
-    def __init__(self, handler):
+    def __init__(self, handler) -> None:
         super().__init__(handler)
 
     def play(self) -> None:
@@ -27,27 +20,24 @@ class FairytaleLoop(SpeechLoop):
             self.read_fairy_tale(self.handler.result)
             print("Märchen vorbei")
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
-            
         
-        elif ("kein" in self.handler.result):
+        elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
-           
-        
+              
         else:
             self.speak_text("Dieses Märchen kenne ich leider nicht. Möchtest du wissen, welche Märchen ich kenne?")
             while(1):
                 self.handler.result = self.listen()
                 print(self.handler.result)
-                if any(x in self.handler.result for x in ("ja", "genau", "gerne")):
+                if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.speak_text("Ich kenne")
                     alleMaerchen = ""
                     for name in self.get_maerchen():
                         alleMaerchen += name + ", "
                     self.speak_text(alleMaerchen)
                     break
-                elif any(x in self.handler.result for x in ("nein", "nicht", "nö")):
+                elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
                     break
                 else:
-                    self.speak_text("Was meine Mutter?")
-                    #self.speak_text("Ich habe dich leider nicht verstanden. Welches Märchen möchtest du denn gerne hören?")
+                    self.speak_text("Ich habe dich leider nicht verstanden. Welches Märchen möchtest du denn gerne hören?")
             self.speak_text("Welches Märchen möchtest du denn gerne hören?")
