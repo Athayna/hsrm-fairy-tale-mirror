@@ -13,6 +13,7 @@ class WelcomeLoop(SpeechLoop):
         self.handler.result = self.listen()
                             
         if "spiegel" in self.handler.result:
+            self.handler.result = ""
             if (datetime.datetime.now().hour < 10):
                 self.speak_text(f'Guten Morgen {self.handler.user.name}, komm putz dir die Zähne mit mir!')
             elif (datetime.datetime.now().hour > 18):
