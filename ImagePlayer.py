@@ -20,6 +20,7 @@ class ImagePlayer:
         self.imageDict.update({"snow_white": "snow_white.png"})
         self.imageDict.update({"ende": "ende.jpg"})
         self.imageDict.update({"blaubarsch": "blaubarsch.jpg"})
+        self.imageDict.update({"dornröschen": "dornröschen.png"})
 
     def start(self) -> None:
         self.fillDict()
@@ -28,6 +29,8 @@ class ImagePlayer:
         self.window.mainloop()
 
     def setImage(self, imageKey:str) -> None:
+        print("change pic")
+        print(self.imageDict.get(imageKey))
         self.imageTxt = imageKey
         self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
         for img in self.window.winfo_children():

@@ -106,9 +106,11 @@ class SpeechLoop():
             print ("File not found")
 
     def findPicture(self, line:str) -> None:
+        print(line)
         for word in line.split():
             word = re.sub("[^A-Za-z]","",word.lower())
             if word in self.handler.imagePlayer.imageDict and word != self.handler.imagePlayer.imageTxt:
+                print(word)
                 self.handler.imagePlayer.setImage(word)
                 return
 
