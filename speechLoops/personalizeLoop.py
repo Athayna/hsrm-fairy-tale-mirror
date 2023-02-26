@@ -10,7 +10,8 @@ class PersonalizeLoop(SpeechLoop):
         ################################################ KENNENLERNEN - NAME ################################################
         # Name? -> String -> Richtig/Falsch; alt: "Sag ich nicht"
         
-        self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir die Zeit sagen, das Wetter vorhersagen, dir eine Geschichte vorlesen und vieles mehr."\
+        self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir eine Geschichte vorlesen, das Wetter vorhersagen, dir die Zeit sagen und vieles mehr."\
+                        "Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich." \
                         "Zuerst möchte ich dich ein wenig kennenlernen."\
                         "Wie heißt du denn?")
         while(1):
@@ -85,5 +86,34 @@ class PersonalizeLoop(SpeechLoop):
                 self.handler.result = ""
                 self.speak_text("Ich habe dich leider nicht verstanden. Was ist deine Lieblingsfarbe?")
 
-        self.speak_text("Dann weiß ich jetzt die wichtigsten Sachen über dich. Viel Spaß!")
-        self.speak_text("Um mit mir zu sprechen, sag einfach: Hallo Spiegel oder trete vor mich.")
+        self.speak_text("Dann weiß ich jetzt die wichtigsten Sachen über dich.")
+
+################################################ VORSTELLUNG - Spiegel ################################################
+        self.speak_text("Weißt du eigentlich aus welchem Märchen du mich kennst?")
+
+        while(1):
+            self.handler.result = self.listen()
+            if any(x in self.handler.result for x in ("egal", "abbrechen", "stop")):
+                self.handler.result = ""
+                self.speak_text(f'Ich verrate es dir trotzdem, ich stamme aus Schneewittchen und die sieben Zwerge. Und jetzt wünsche ich dir viel Spaß {self.handler.user.name}!')
+                break
+            elif any(x in self.handler.result for x in ("ja", "genau", "richtig", "vielleicht", "eventuell")):
+                self.handler.result = ""
+                self.speak_text("Aus welchem Märchen denkst du, kennst du mich?")
+                self.handler.result = self.listen()
+            elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
+                self.handler.result = ""
+                self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, welches Märchen es ist.")
+                self.handler.result = self.listen()
+            elif any(x in self.handler.result for x in ("lösung", "sag es mir", "ergebnis")):
+                self.handler.result = ""
+                self.speak_text(f'Ich stamme aus Schneewittchen und die sieben Zwerge. Wenn du das Märchen hören möchtest, dann sag Märchen. Ansonsten viel Spaß {self.handler.user.name}!')
+                break
+            if any(x in self.handler.result for x in ("schneewittchen", "sieben zwerge")):
+                self.handler.result = ""
+                self.speak_text(f'Richtig, das hast du super erraten {self.handler.user.name}. Ich stamme aus Schneewittchen und die sieben Zwerge. Wenn du das Märchen mal von mir hören möchtest, dann sag Märchen. Ansonsten viel Spaß!')
+                break
+            else:
+                self.handler.result = ""
+                self.speak_text("Ich bin mir nicht sicher, ob ich dich richtig verstanden habe. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Märchen verrate von dem ich stamme.")
+            

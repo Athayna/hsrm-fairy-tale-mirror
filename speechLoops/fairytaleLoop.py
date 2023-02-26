@@ -44,5 +44,5 @@ class FairytaleLoop(SpeechLoop):
                     break
                 else:
                     self.handler.result = ""
-                    self.speak_text("Ich habe dich leider nicht verstanden. Welches Märchen möchtest du denn gerne hören?")
+                    self.speak_text("Ich habe dich leider nicht verstanden. Möchtest du wissen, welche Märchen ich kenne?")
             self.speak_text("Welches Märchen möchtest du denn gerne hören?")

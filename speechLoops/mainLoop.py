@@ -53,6 +53,15 @@ class MainLoop(SpeechLoop):
             
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("fairytaleLoop"))
 
+        elif any(x in self.handler.result for x in ("spiel", "lern")):
+            self.handler.result = ""
+            self.speak_text("Welches Lernspiel möchstest du spielen?")
+            self.handler.setSpeechLoop(self.handler.getSpeechLoop("gameLoop"))
+
+        elif "wer" in self.handler.result and "schönst" in self.handler.result:
+            self.handler.result = ""
+            self.speak_text(f'{self.handler.user.name}, Du bist am Schönsten! Selbst das Schneewittchen, ueber den Bergen, bei den sieben Zwergen, ist nicht schoener als du.')
+
         else:
             self.handler.result = ""
             self.speak_text("Ich habe dich nicht verstanden. Möchtest du wissen, was ich alles kann?")

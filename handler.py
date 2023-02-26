@@ -1,4 +1,5 @@
 from ImagePlayer import ImagePlayer
+from speechLoops.gameLoop import GameLoop
 from user import User
 from speechLoops.speechLoop import SpeechLoop
 from speechLoops.fairytaleLoop import FairytaleLoop
@@ -38,6 +39,7 @@ class Handler:
         self.updateSpeechLoopDict("mainLoop", MainLoop(self))
         self.updateSpeechLoopDict("fairytaleLoop", FairytaleLoop(self))
         self.updateSpeechLoopDict("personalizeLoop", PersonalizeLoop(self))
+        self.updateSpeechLoopDict("gameLoop", GameLoop(self))
 
     def checkForAbort(self) -> bool:
         if (any(x in self.result for x in ("abbrechen", "ende", "stop"))):
