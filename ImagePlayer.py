@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
+import text_to_image
 
 class ImagePlayer:
     """ImagePlayer class that displays images in fullscreen mode."""
@@ -78,6 +79,15 @@ class ImagePlayer:
         print(self.imageDict.get(imageKey))
         self.imageTxt = imageKey
         self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
+        for img in self.window.winfo_children():
+            img.destroy()
+        self.imgToDisplay = ImageTk.PhotoImage(self.image)
+        labelToAdd = tk.Label(image=self.imgToDisplay)
+        labelToAdd.place(relx=0.5, rely=0.5, anchor="center")
+    
+    def setTextImage(self, imageText:str) -> None:
+        encoded_image_path = text_to_image.encode(imageText, "textImage.png")
+        self.image = Image.open(encoded_image_path)
         for img in self.window.winfo_children():
             img.destroy()
         self.imgToDisplay = ImageTk.PhotoImage(self.image)

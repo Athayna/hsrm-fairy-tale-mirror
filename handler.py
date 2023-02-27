@@ -18,7 +18,7 @@ class Handler:
     '''
 
     def __init__(self) -> None:
-        self.user = User('', 0, '')
+        self.user = User('', 0, '', 0, 0, 0, 0)
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
@@ -48,6 +48,6 @@ class Handler:
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["mainLoop"]
+        self.speechLoop = self.speechLoopDict["personalizeLoop"]
         while not self.checkForAbort():
             self.speechLoop.play()
