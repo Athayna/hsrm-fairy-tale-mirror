@@ -1,10 +1,11 @@
 class User:
     """User class containing all user information set in the PeronalizeLoop"""
-    def __init__(self, name:str, age:int, color:str, wordGame:int, numberGame:int, multGame:int, clockGame:int) -> None:
+    def __init__(self, name:str, age:int, school:bool, color:str, wordGame:int, numberGame:int, multGame:int, clockGame:int) -> None:
         self.name = name
         self.age = age
+        self.school = school
         self.color = color
-        self.wordGame = 0
-        self.numberGame = 0
-        self.multGame = 0
-        self.clockGame = 0
+        self.wordGame = wordGame
+        self.numberGame = numberGame
+        self.multGame = multGame
+        self.clockGame = clockGame

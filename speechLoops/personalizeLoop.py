@@ -60,13 +60,36 @@ class PersonalizeLoop(SpeechLoop):
                 elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
                     self.handler.result = ""
                     self.speak_text("Tut mir leid. Wie alt bist du denn?")
-            elif ("Sag ich nicht" in tempAge):
+            elif ("Sag ich nicht" in self.handler.result):
                 self.handler.result = ""
                 self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal dein Alter.")
                 break 
             else:
                 self.handler.result = ""
                 self.speak_text("Ich habe dich leider nicht verstanden. Wie alt bist du? Wenn du mir das nicht verraten möchtest, sag einfach: Sag ich nicht.")
+
+        # ################################################ KENNENLERNEN - ALTER ################################################
+        # Schule? -> Richtig/Falsch; alt: "Sag ich nicht"
+        
+        self.speak_text("Du bist ja schon ziemlich groß. Gehst du denn schon zur Schule?")
+
+        while(1):
+            self.handler.result = self.listen()
+            if any(x in self.handler.result for x in ("ja", "genau", "richtig", "klar", "sicher")):
+                self.handler.result = ""
+                self.handler.user.school = True
+                self.speak_text(f'Ich bin beeindruckt, dann hast du bestimmt schon richtig viel gelernt. Vielleicht kann ich dir mit meinen Lernspielen mal helfen.')
+                break
+            elif any(x in self.handler.result for x in ("nein", "falsch", "nö", "nicht", "ne")):
+                self.speak_text("Im Kindergarten lernst du auch schon viele tolle Sachen und hast bestimmt auch ganz liebe Freunde.")
+                break
+            elif ("Sag ich nicht" in self.handler.result):
+                self.handler.result = ""
+                self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir das nächstes Mal.")
+                break 
+            else:
+                self.handler.result = ""
+                self.speak_text("Ich habe dich leider nicht verstanden. Gehst du schon zur Schule?")
 
         # ################################################ KENNENLERNEN - Lieblingsfarbe ################################################
         # # Lieblingsfarbe? -> Zahl -> Richtig/Falsch; alt: "Sag ich nicht"

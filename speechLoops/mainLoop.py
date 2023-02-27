@@ -1,6 +1,7 @@
 from speechLoops.speechLoop import SpeechLoop
 import datetime
 
+watchListWords = ["zeit", "uhr", "wetter", "temp", "regen", "kalt", "warm", "heiß", "erzähl", "geschichte", "märchen", "spiel", "lern", "wer", "schönst"]
 class MainLoop(SpeechLoop):
     """MainLoop is the main loop of the program. It is the second loop that is started and the last one that is stopped."""
 
@@ -21,7 +22,7 @@ class MainLoop(SpeechLoop):
             self.handler.result = ""
             self.speak_text(f'Heute ist der {datetime.datetime.now().strftime("%d.%m.%Y")}')
 
-        elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm")):
+        elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm", "heiß")):
             self.handler.result = ""
             weather = self.find_weather()
             self.speak_text(f'Das Wetter in {weather["location"]} ist {weather["temperature"]} Grad Celsius')
@@ -69,7 +70,7 @@ class MainLoop(SpeechLoop):
                 self.handler.result = self.listen()
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.handler.result = ""
-                    self.speak_text("Ich kann Geschichten erzählen, die Uhrzeit, das Datum oder das Wetter sagen, ...")
+                    self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
                     break
                 elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
                     self.handler.result = ""

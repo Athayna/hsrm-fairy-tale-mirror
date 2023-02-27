@@ -20,7 +20,7 @@ class Handler:
     '''
 
     def __init__(self) -> None:
-        self.user = User('', 0, '', 0, 0, 0, 0)
+        self.user = User('', 0, '', False, 0, 0, 0, 0)
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
