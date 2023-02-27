@@ -1,5 +1,5 @@
 # Fairy Tale Mirror
-> A project for the course "Mensch-Computer-Interaktion" at Hochschule RheinMain involving a voice controlled smart mirror for children
+> A project for the course "Human Computer Interaction" at Hochschule RheinMain in 5th semester involving a voice controlled smart mirror for children
 
 ## Features
 
@@ -7,6 +7,7 @@
 - **Brushing Teeth:** Motivates children to brush teeth
 - **Fairy Tales:** Reads a number of locally stored fairy tales
 - **Weather data:** Fetches real time weather data for responses based on that data
+- **Learning Games:** Games that teach the child to read or do math
 
 ## Development
 
@@ -25,7 +26,7 @@ The application was build within one semester. The development process contained
 
 Install Python and in any command line run:
 ```
-pip install speechrecognition pyaudio gtts beautifulsoup4 requests pillow pyaudio playsound==1.2.2
+pip install speechrecognition gtts requests pillow pyaudio playsound==1.2.2
 ```
 You will need a window manager and desktop environment installed.
 

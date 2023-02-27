@@ -41,7 +41,7 @@ class MainLoop(SpeechLoop):
                     alleMaerchen = ""
                     for name in self.get_maerchen():
                         alleMaerchen += name + ", "
-                    self.speak_text(alleMaerchen)
+                    self.speak_text(alleMaerchen, self.get_maerchen())
                     break
                 elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
                     self.handler.result = ""

@@ -6,6 +6,8 @@ from speechLoops.fairytaleLoop import FairytaleLoop
 from speechLoops.mainLoop import MainLoop
 from speechLoops.welcomeLoop import WelcomeLoop
 from speechLoops.personalizeLoop import PersonalizeLoop
+from speechLoops.sleepLoop import SleepLoop
+import time
 
 class Handler:
     '''
@@ -22,8 +24,10 @@ class Handler:
         self.context = dict()
         self.speechLoopDict = dict()
         self.speechLoop = None
-        self.result =""
+        self.result = ""
         self.imagePlayer = ImagePlayer()
+        self.sleeping = False
+        self.lastInteraction = time.time()
         
     def setSpeechLoop(self, speechLoop:SpeechLoop) -> None:
         self.speechLoop = speechLoop
@@ -40,14 +44,22 @@ class Handler:
         self.updateSpeechLoopDict("fairytaleLoop", FairytaleLoop(self))
         self.updateSpeechLoopDict("personalizeLoop", PersonalizeLoop(self))
         self.updateSpeechLoopDict("gameLoop", GameLoop(self))
+        self.updateSpeechLoopDict("sleepLoop", SleepLoop(self))
 
     def checkForAbort(self) -> bool:
-        if (any(x in self.result for x in ("abbrechen", "ende", "stop"))):
+        return True if any(x in self.result for x in ("abbrechen", "ende", "stop")) else False
+    
+    def checkForSleep(self) -> bool:
+        divTime = time.time() - self.lastInteraction
+        print(f'Zeit seit letzter Interaktion: {divTime}')
+        if divTime > 60:
+            self.speechLoop = self.speechLoopDict["sleepLoop"]
             return True
         return False
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["personalizeLoop"]
-        while not self.checkForAbort():
+        self.speechLoop = self.speechLoopDict["fairytaleLoop"]
+        
+        while 1:
             self.speechLoop.play()

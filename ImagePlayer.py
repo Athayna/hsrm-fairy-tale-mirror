@@ -1,12 +1,14 @@
 import tkinter as tk
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageFont, ImageDraw
 import text_to_image
+import io
 
 class ImagePlayer:
     """ImagePlayer class that displays images in fullscreen mode."""
 
     def __init__(self) -> None:
         self.window = tk.Tk()
+        self.window.configure(bg='black')
         self.wWidth = self.window.winfo_screenwidth()
         self.wHeight = self.window.winfo_screenheight()
         self.imageDict = dict()
@@ -22,7 +24,7 @@ class ImagePlayer:
         self.imageDict.update({"ende": "ende.jpg"})
         self.imageDict.update({"blaubarsch": "blaubarsch.jpg"})
         self.imageDict.update({"kind": "baby.png"})
-        self.imageDict.update({"??": "babyPrinzessin.png"})
+        self.imageDict.update({"baby-prinzessin": "babyPrinzessin.png"})
         self.imageDict.update({"stiefkoenigin": "böseKönigin.png"})
         self.imageDict.update({"dreizehnte": "böseKönigin.png"})
         self.imageDict.update({"brunnen": "brunnen.png"})
@@ -65,9 +67,6 @@ class ImagePlayer:
         self.imageDict.update({"zwerge": "zwerg.png"})
         self.imageDict.update({"zwergen": "zwerg.png"})
 
-
-
-
     def start(self) -> None:
         self.fillDict()
         self.window.attributes("-fullscreen", True)
@@ -81,17 +80,24 @@ class ImagePlayer:
         self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
         for img in self.window.winfo_children():
             img.destroy()
-        self.imgToDisplay = ImageTk.PhotoImage(self.image)
-        labelToAdd = tk.Label(image=self.imgToDisplay)
+        self.imgToDisplay = ImageTk.PhotoImage(self.resizeImage(self.image))
+        labelToAdd = tk.Label(image=self.imgToDisplay, background="black")
         labelToAdd.place(relx=0.5, rely=0.5, anchor="center")
     
     def setTextImage(self, imageText:str) -> None:
-        encoded_image_path = text_to_image.encode(imageText, "textImage.png")
-        self.image = Image.open(encoded_image_path)
+        image = Image.open('plain.png')
+        draw = ImageDraw.Draw(image)
+        txt = imageText
+        fontsize = 40  
+        font = ImageFont.truetype("arial.ttf", fontsize)
+        draw.text((200, 50), txt, font=font) 
+        image.save('text.png')
+
+        self.image = Image.open("text.png")
         for img in self.window.winfo_children():
             img.destroy()
-        self.imgToDisplay = ImageTk.PhotoImage(self.image)
-        labelToAdd = tk.Label(image=self.imgToDisplay)
+        self.imgToDisplay = ImageTk.PhotoImage(self.resizeImage(self.image))
+        labelToAdd = tk.Label(image=self.imgToDisplay, background="black")
         labelToAdd.place(relx=0.5, rely=0.5, anchor="center")
 
     def resizeImage(self, image:Image) -> Image:

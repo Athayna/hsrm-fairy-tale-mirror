@@ -3,12 +3,15 @@ from gtts import gTTS
 from playsound import playsound
 import requests
 import os
-from bs4 import BeautifulSoup
 import re
+import time
 import multiprocessing
 from signal import SIGINT
 
 ######################################## BASE LOOP - ABSTRACT ########################################
+watchListWords = {
+    "abbruch": ["abbruch", "abbrechen", "stop"]
+}
 
 class SpeechLoop():
     """Abstract class for speech loops"""
@@ -16,33 +19,42 @@ class SpeechLoop():
     def __init__(self, handler) -> None:
         self.handler = handler
 
-    def listen(self) -> str:
-        """Abstract method for listening to user input"""
+    def listen(self, showPictures=True) -> str:
+        """Method for listening to user input"""
         
         with sr.Microphone() as source:
             r = sr.Recognizer()
             while(1):
                 try:
+                    print(f'sleeping: {self.handler.sleeping}')
+                    if not self.handler.sleeping and self.handler.checkForSleep():
+                        return ''
                     print("Adjusting ambient noise")
                     r.adjust_for_ambient_noise(source, duration=0.5)
                     print("Listening...")
-                    self.handler.imagePlayer.setImage("dog")
-                    audio = r.listen(source)
+                    if showPictures:
+                        self.handler.imagePlayer.setImage("dog")
+                    audio = r.listen(source, timeout=5)
                     print("Interpreting input")
-                    self.handler.imagePlayer.setImage("cat")
+                    if showPictures:
+                        self.handler.imagePlayer.setImage("cat")
                     result = r.recognize_google(audio, language="de-DE").lower()
                     print(f'Understood {result}, returning self.handler.result')
+                    self.handler.lastInteraction = time.time()
                     return result.lower()
                 except sr.RequestError as e:
                     print(f'Could not request self.handler.results; {e}')
                 except sr.UnknownValueError:
-                    print("unknown error occurred")        
+                    print("unknown error occurred")
+                except sr.WaitTimeoutError:
+                    print("Listen Timeout")
 
-    def speak_text(self, command) -> None:
+    def speak_text(self, command, watchListWords=watchListWords["abbruch"]) -> None:
+        print(f'speaktext array: {watchListWords}')
         readProcess = multiprocessing.Process(target=speak_tale, args=[command])          
         readProcess.start()
         conn1, conn2 = multiprocessing.Pipe()
-        listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, conn2])
+        listenProcess = multiprocessing.Process(target=listenToKill, args=[readProcess.pid, conn2, None, watchListWords])
         listenProcess.start()
         while(readProcess.is_alive()):
             if conn1.poll(0.1):
@@ -53,9 +65,13 @@ class SpeechLoop():
             listenProcess.terminate()
 
     def play(self) -> None:
+        """Method for playing the loop"""
+        
         pass
 
     def get_maerchen(self) -> list:
+        """Method for getting a list of all fairy tales in the maerchen folder"""       
+        
         list = []
         for file in os.listdir(os.getcwd() + "\\maerchen"):
             if file.endswith(".txt"):
@@ -63,27 +79,37 @@ class SpeechLoop():
         return list
 
     def find_weather(self) -> dict:
-        city_name = 'Wiesbaden'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-        }
+        """Method for finding the weather in a city. Returns a dictionary with the temperature, the weather description and the city name."""
 
-        res = requests.get(
-            f'https://www.google.com/search?q={city_name}&oq={city_name}&aqs=chrome.0.35i39l2j0l4j46j69i60.6128j1j7&sourceid=chrome&ie=UTF-8', headers=headers)
-        
-        soup = BeautifulSoup(res.text, 'html.parser')
-        return dict(
-            location = soup.select('#wob_loc')[0].getText().strip(),
-            time = soup.select('#wob_dts')[0].getText().strip(),
-            info = soup.select('#wob_dc')[0].getText().strip(),
-            temperature = soup.select('#wob_tm')[0].getText().strip()
-        )
+        API_KEY = 'e9bed519ef99f64f1873e3e42118989f'
+        city_name = 'Wiesbaden'
+        GEO_URL = f'http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=1&appid={API_KEY}'
+        geolocation = requests.get(GEO_URL)
+        geo_json = geolocation.json()
+        lat = geo_json[0]["lat"]
+        lon = geo_json[0]["lon"]
+        REQUEST_URL = f'http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric'
+        res = requests.get(REQUEST_URL)
+        response = res.json()
+        if(response["cod"] != "404"):
+            body = response["main"]
+            current_weather = response["weather"]
+            return dict(
+                temperature = int(body["temp"]),
+                info = current_weather[0]["description"],
+                location = city_name
+            )
+        else:
+            return None
 
     def read_fairy_tale(self, title) -> None:
+        """Method for reading a fairy tale from the maerchen folder"""
+
         try:
             with open(os.getcwd() + "\\maerchen\\" + title + ".txt") as file:
                 lines = file.readlines()
                 for line in lines:
+                    self.handler.lastInteraction = time.time()
                     self.findPicture(line)
                     readProcess = multiprocessing.Process(target=speak_tale, args=[line])          
                     readProcess.start()
@@ -116,17 +142,16 @@ class SpeechLoop():
 
 ######################################## DIFFERENT LOOPS ########################################
 
-watchListWords = {
-    "abbruch": ["abbruch", "abbrechen", "stop"]
-}
-
 def speak_tale(command) -> None:
+    """Method for speaking a text with Google's text-to-speech API."""
+
     tts = gTTS(text=command, lang='de', slow=False)
     tts.save('tts.mp3')
     playsound('tts.mp3')
     os.remove('tts.mp3')
 
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
+    print(f'listenkill array: {watchListWords}')
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
