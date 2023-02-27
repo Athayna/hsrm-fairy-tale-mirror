@@ -9,12 +9,8 @@ class GameLoop(SpeechLoop):
         super().__init__(handler)
 
     def play(self) -> None:
-        self.handler.user.name = "susi"
-        self.handler.user.wordGame = 6
-        self.handler.user.numberGame = 2
-        self.handler.user.multGame = 2
-        #self.handler.result = self.listen()
-        self.handler.result = "zahl"
+        
+        self.handler.result = self.listen()
 
         if "wort" in self.handler.result:
         ################################################ SPIEL - Wort für Wort ################################################
@@ -26,7 +22,7 @@ class GameLoop(SpeechLoop):
                          ["Frosch", "Brunnen", "schlau", "rennen", "lustig"]]
             level = self.handler.user.wordGame//5
             correctAnswers = 0
-            beendeSpiel = 3
+            beendeSpiel = 5
             usedArray = wordArray[level].copy()
             getWordNum = random.randint(0, (len(usedArray))-1)
             guessWord = usedArray[getWordNum]
