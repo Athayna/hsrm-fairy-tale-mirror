@@ -21,37 +21,33 @@ class SpeechLoop():
 
     def listen(self, showPictures=True) -> str:
         """Method for listening to user input"""
-        while 1:
-            try:
-                with sr.Microphone() as source:
-                    r = sr.Recognizer()
-                    while(1):
-                        try:
-                            print(f'sleeping: {self.handler.sleeping}')
-                            if not self.handler.sleeping and self.handler.checkForSleep():
-                                return ''
-                            print("Adjusting ambient noise")
-                            r.adjust_for_ambient_noise(source, duration=0.5)
-                            print("Listening...")
-                            if showPictures:
-                                self.handler.imagePlayer.setImage("dog")
-                            audio = r.listen(source, timeout=5)
-                            print("Interpreting input")
-                            if showPictures:
-                                self.handler.imagePlayer.setImage("cat")
-                            result = r.recognize_google(audio, language="de-DE").lower()
-                            print(f'Understood {result}, returning self.handler.result')
-                            self.handler.lastInteraction = time.time()
-                            return result.lower()
-                        except sr.RequestError as e:
-                            print(f'Could not request self.handler.results; {e}')
-                        except sr.UnknownValueError:
-                            print("unknown error occurred")
-                        except sr.WaitTimeoutError:
-                            print("Listen Timeout")
-            except OSError:
-                time.sleep(0.5)
-                        
+        
+        with sr.Microphone() as source:
+            r = sr.Recognizer()
+            while(1):
+                try:
+                    print(f'sleeping: {self.handler.sleeping}')
+                    if not self.handler.sleeping and self.handler.checkForSleep():
+                        return ''
+                    print("Adjusting ambient noise")
+                    r.adjust_for_ambient_noise(source, duration=0.5)
+                    print("Listening...")
+                    if showPictures:
+                        self.handler.imagePlayer.setImage("dog")
+                    audio = r.listen(source, timeout=5)
+                    print("Interpreting input")
+                    if showPictures:
+                        self.handler.imagePlayer.setImage("cat")
+                    result = r.recognize_google(audio, language="de-DE").lower()
+                    print(f'Understood {result}, returning self.handler.result')
+                    self.handler.lastInteraction = time.time()
+                    return result.lower()
+                except sr.RequestError as e:
+                    print(f'Could not request self.handler.results; {e}')
+                except sr.UnknownValueError:
+                    print("unknown error occurred")
+                except sr.WaitTimeoutError:
+                    print("Listen Timeout")
 
     def speak_text(self, command, watchListWords=watchListWords["abbruch"]) -> None:
         print(f'speaktext array: {watchListWords}')
@@ -157,27 +153,23 @@ def speak_tale(command) -> None:
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     print(f'listenkill array: {watchListWords}')
     def listenWithoutClass():
-        while 1:
-            try:
-                with sr.Microphone() as source:
-                    r = sr.Recognizer()
-                    while(1):
-                        try:
-                            print("Adjusting ambient noise in kill")
-                            r.adjust_for_ambient_noise(source, duration=0.5)
-                            print("Listening...")
-                            audio = r.listen(source)
-                            print("Interpreting input in kill")
-                            result = r.recognize_google(audio, language="de-DE").lower()
-                            print(f'Understood {result}, returning self.handler.result in kill')
-                            return result.lower()
-                        except sr.RequestError as e:
-                            print(f'Could not request self.handler.results; {e} in kill')
-                        except sr.UnknownValueError:
-                            print("unknown error occurred in kill")    
-            except OSError:
-                time.sleep(0.5)
-
+        with sr.Microphone() as source:
+            r = sr.Recognizer()
+            while(1):
+                try:
+                    print("Adjusting ambient noise in kill")
+                    r.adjust_for_ambient_noise(source, duration=0.5)
+                    print("Listening...")
+                    audio = r.listen(source)
+                    print("Interpreting input in kill")
+                    result = r.recognize_google(audio, language="de-DE").lower()
+                    print(f'Understood {result}, returning self.handler.result in kill')
+                    return result.lower()
+                except sr.RequestError as e:
+                    print(f'Could not request self.handler.results; {e} in kill')
+                except sr.UnknownValueError:
+                    print("unknown error occurred in kill")    
+    
     while(1):
         result = listenWithoutClass()
         print (result)
@@ -198,4 +190,3 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
                     #os.kill(thread, SIGINT)
                     os.kill(thread, SIGKILL)
                     return
-            
