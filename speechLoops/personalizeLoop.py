@@ -26,6 +26,7 @@ class PersonalizeLoop(SpeechLoop):
             tempName = self.handler.result
             if not self.handler.result:
                 return
+            self.handler.result = ""
             if ("Sag ich nicht" in tempName):
                 self.handler.result = ""
                 self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.", watchListSkip)
@@ -128,6 +129,7 @@ class PersonalizeLoop(SpeechLoop):
             tempLieblingsfarbe = self.handler.result
             if not self.handler.result:
                 return
+            self.handler.result = ""
             if ("Sag ich nicht" in tempLieblingsfarbe):
                 self.handler.result = ""
                 self.speak_text("Das finde ich aber schade. Vielleicht verrätst du mir nächstes Mal deine Lieblingsfarbe.", watchListSkip)
