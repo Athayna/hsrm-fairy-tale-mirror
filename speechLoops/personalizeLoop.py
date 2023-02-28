@@ -35,6 +35,7 @@ class PersonalizeLoop(SpeechLoop):
                 self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.", watchListSkip)
                 tempName = self.listen()
             print("bestätige name")
+            self.speak_text("Habe ich dich richtig verstanden?")
             self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}', watchListConfirmation)
             if self.handler.result == "":
                 print("name richtig?")
