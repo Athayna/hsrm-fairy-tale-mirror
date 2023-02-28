@@ -1,5 +1,8 @@
 from speechLoops.speechLoop import SpeechLoop
 
+watchListConfirmation = ["ja", "genau", "gern", "ok", "klar", "nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen"]
+watchListMenu = ["zeit", "uhr", "wetter", "temp", "regen", "kalt", "warm", "heiß", "erzähl", "geschichte", "märchen", "spiel", "lern", "wer", "schönst"]
+
 class FairytaleLoop(SpeechLoop):
     """SpeechLoop for the fairytale mode."""
     
@@ -24,20 +27,20 @@ class FairytaleLoop(SpeechLoop):
             print(self.handler)
             self.read_fairy_tale(readFairytale)
             print("Märchen vorbei")
-            self.speak_text(f'Das Märchen ist zu Ende. Was möchtest du gerne machen?')
+            self.speak_text(f'Das Märchen ist zu Ende. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
         elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
             self.handler.result = ""
-            self.speak_text(f'Die Märchenauswahl wurde abgebrochen. Was möchtest du gerne machen?')
+            self.speak_text(f'Die Märchenauswahl wurde abgebrochen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
               
         else:
             self.handler.result = ""
-            self.speak_text("Dieses Märchen kenne ich leider nicht. Möchtest du wissen, welche Märchen ich kenne?")
+            self.speak_text("Dieses Märchen kenne ich leider nicht. Möchtest du wissen, welche Märchen ich kenne?", watchListConfirmation)
             while(1):
-                self.handler.result = self.listen()
-                print(self.handler.result)
+                if self.handler.result == "":
+                    self.handler.result = self.listen()
                 if not self.handler.result:
                     return
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
@@ -53,7 +56,7 @@ class FairytaleLoop(SpeechLoop):
                     break
                 else:
                     self.handler.result = ""
-                    self.speak_text("Ich habe dich leider nicht verstanden. Möchtest du wissen, welche Märchen ich kenne?")
+                    self.speak_text("Ich habe dich leider nicht verstanden. Möchtest du wissen, welche Märchen ich kenne?", watchListConfirmation)
             
             if self.handler.result == "":
-                self.speak_text("Welches Märchen möchtest du denn gerne hören?")
+                self.speak_text("Welches Märchen möchtest du denn gerne hören?", self.get_maerchen())

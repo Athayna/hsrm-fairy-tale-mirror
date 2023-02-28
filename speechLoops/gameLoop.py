@@ -5,6 +5,9 @@ from text_to_num import alpha2digit
 watchListWords = ["wort", "abc", "künste", "zahl", "zauber", "einmaleins", "meister", "tiktak", "uhr", "weiter", "überspringen"]
 watchListWordsGame = ["ende", "abbrechen", "stop", "weiter", "überspringen"]
 watchListWordsGameSol= ["lösung", "ende", "abbrechen", "stop", "weiter", "überspringen"]
+watchListConfirmation = ["ja", "genau", "gern", "ok", "klar", "nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen"]
+watchListMenu = ["zeit", "uhr", "wetter", "temp", "regen", "kalt", "warm", "heiß", "erzähl", "geschichte", "märchen", "spiel", "lern", "wer", "schönst"]
+
 
 class GameLoop(SpeechLoop):
     """SpeechLoop for the game mode."""
@@ -57,9 +60,10 @@ class GameLoop(SpeechLoop):
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
-                    self.speak_text("Möchtest du das Spiel wirklich beenden?")
+                    self.speak_text("Möchtest du das Spiel wirklich beenden?", watchListConfirmation)
                     while(1):
-                        self.handler.result = self.listen()
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
                         if not self.handler.result:
                             return
                         if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
@@ -74,7 +78,7 @@ class GameLoop(SpeechLoop):
                             break
                         else:
                             self.handler.result = ""
-                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?")
+                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?", watchListConfirmation)
                 elif any(x in self.handler.result for x in ("weiß", "keine")) and any(x in self.handler.result for x in ("nicht", "ahnung", "plan", "lust")):
                     self.handler.result = ""
                     self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, welches Wort da steht.", watchListWordsGameSol)
@@ -96,18 +100,18 @@ class GameLoop(SpeechLoop):
 
             self.handler.imagePlayer.setImage("cat")
             if correctAnswers >= 4:
-                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein richtiger Profi im Lesen!')
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein richtiger Profi im Lesen!', ["weiter", "überspringen"])
             elif correctAnswers < 4:
-                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.')
+                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
             print("Spiel vorbei")
             self.handler.user.wordGame += correctAnswers
-            self.speak_text(f'Das Spiel ist zu Ende. Was möchtest du gerne machen?')
+            self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
         elif any(x in self.handler.result for x in ("abc", "künste", "alphabet")):
         ################################################ SPIEL - ABC Künste ################################################
             self.handler.result = ""
-            self.speak_text("Los geht's mit ABC Künste. Um den Buchstaben zu erraten sag ein davor. Zum Beispiel, wenn da a steht, musst du ein a sagen, sonst verstehe ich dich leider nicht.")
+            self.speak_text("Los geht's mit ABC Künste. Um den Buchstaben zu erraten sag ein davor. Zum Beispiel, wenn da a steht, musst du ein a sagen, sonst verstehe ich dich leider nicht.", ["weiter", "überspringen"])
             alphabetArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
             correctAnswers = 0
             beendeSpiel = 5
@@ -126,9 +130,10 @@ class GameLoop(SpeechLoop):
                     return
                 if any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
-                    self.speak_text("Möchtest du das Spiel wirklich beenden?")
+                    self.speak_text("Möchtest du das Spiel wirklich beenden?", watchListConfirmation)
                     while(1):
-                        self.handler.result = self.listen()
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
                         if not self.handler.result:
                             return
                         if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
@@ -143,7 +148,7 @@ class GameLoop(SpeechLoop):
                             break
                         else:
                             self.handler.result = ""
-                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?")
+                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?", watchListConfirmation)
                 elif any(x in self.handler.result for x in ("weiß", "keine")) and any(x in self.handler.result for x in ("nicht", "ahnung", "plan", "lust")):
                     self.handler.result = ""
                     self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, welcher Buchstabe da steht.", watchListWordsGameSol)
@@ -197,11 +202,11 @@ class GameLoop(SpeechLoop):
 
             self.handler.imagePlayer.setImage("cat")
             if correctAnswers >= 4:
-                self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst dein Alphabet bestens! Trau dich gerne mal an das Wort für Wort Spiel.')
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst dein Alphabet bestens! Trau dich gerne mal an das Wort für Wort Spiel.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
-                self.speak_text(f'Immer weiter so {self.handler.user.name}. Bald kannst du das ganze ABC.')
+                self.speak_text(f'Immer weiter so {self.handler.user.name}. Bald kannst du das ganze ABC.', ["weiter", "überspringen"])
             print("Spiel vorbei")
-            self.speak_text(f'Das Spiel ist zu Ende. Was möchtest du gerne machen?')
+            self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
 
         elif any(x in self.handler.result for x in ("zahl", "zauber")):
@@ -274,9 +279,10 @@ class GameLoop(SpeechLoop):
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
-                    self.speak_text("Möchtest du das Spiel wirklich beenden?")
+                    self.speak_text("Möchtest du das Spiel wirklich beenden?", watchListConfirmation)
                     while(1):
-                        self.handler.result = self.listen()
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
                         if not self.handler.result:
                             return
                         if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
@@ -291,14 +297,14 @@ class GameLoop(SpeechLoop):
                             break
                         else:
                             self.handler.result = ""
-                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?")
+                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?", watchListConfirmation)
                 elif any(x in self.handler.result for x in ("weiß", "keine")) and any(x in self.handler.result for x in ("nicht", "ahnung", "plan", "lust")):
                     self.handler.result = ""
-                    self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, was das Ergebnis ist.")
+                    self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, was das Ergebnis ist.", watchListWordsGameSol)
                 elif any(x in self.handler.result for x in ("lösung", "sag es mir", "ergebnis")):
                     self.handler.result = ""
                     beendeSpiel -= 1
-                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.')
+                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
                     if beendeSpiel:
                         if level == 0:
                             getNum1 = random.randint(0, 5)
@@ -325,17 +331,17 @@ class GameLoop(SpeechLoop):
                         print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                 else:
-                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.')
+                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
             self.handler.imagePlayer.setImage("cat")
             if correctAnswers >= 4:
-                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.')
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
-                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.')
+                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
             print("Spiel vorbei")
             self.handler.user.numberGame += correctAnswers
-            self.speak_text(f'Das Spiel ist zu Ende. Was möchtest du gerne machen?')
+            self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
         elif any(x in self.handler.result for x in ("multi", "meister", "einmal")):
@@ -366,15 +372,16 @@ class GameLoop(SpeechLoop):
             self.handler.imagePlayer.setTextImage(displayCalc)
             print(displayCalc)
             while(beendeSpiel):
-                self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
-                self.handler.result = self.listen(showPictures=False)
+                if self.handler.result == "":
+                    self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
+                    self.handler.result = self.listen(showPictures=False)
                 if not self.handler.result:
                     return
                 if str(guessSolution) in alpha2digit(self.handler.result, "de"):
                     self.handler.result = ""
                     correctAnswers += 1
                     beendeSpiel -= 1
-                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}, das stimmt. Weiter so!')
+                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}, das stimmt. Weiter so!', watchListWordsGame)
                     if beendeSpiel:
                         if level <= 5:
                             getNum1 = random.randint(1, level + 1)
@@ -399,9 +406,10 @@ class GameLoop(SpeechLoop):
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
-                    self.speak_text("Möchtest du das Spiel wirklich beenden?")
+                    self.speak_text("Möchtest du das Spiel wirklich beenden?", watchListConfirmation)
                     while(1):
-                        self.handler.result = self.listen()
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
                         if not self.handler.result:
                             return
                         if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
@@ -416,14 +424,14 @@ class GameLoop(SpeechLoop):
                             break
                         else:
                             self.handler.result = ""
-                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?")
+                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?", watchListConfirmation)
                 elif any(x in self.handler.result for x in ("weiß", "keine")) and any(x in self.handler.result for x in ("nicht", "ahnung", "plan", "lust")):
                     self.handler.result = ""
-                    self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, was das Ergebnis ist.")
+                    self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, was das Ergebnis ist.", watchListWordsGameSol)
                 elif any(x in self.handler.result for x in ("lösung", "sag es mir", "ergebnis")):
                     self.handler.result = ""
                     beendeSpiel -= 1
-                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.')
+                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
                     if beendeSpiel:
                         print(level)
                         if level <= 5:
@@ -447,29 +455,30 @@ class GameLoop(SpeechLoop):
                         print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                 else:
-                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.')
+                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
             self.handler.imagePlayer.setImage("cat")
             if correctAnswers >= 4:
-                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.')
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
-                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.')
+                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
             print("Spiel vorbei")
             self.handler.user.numberGame += correctAnswers
-            self.speak_text(f'Das Spiel ist zu Ende. Was möchtest du gerne machen?')
+            self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
         elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
             self.handler.result = ""
-            self.speak_text(f'Die Spielauswahl wurde abgebrochen. Was möchtest du gerne machen?')
+            self.speak_text(f'Die Spielauswahl wurde abgebrochen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
               
         else:
             self.handler.result = ""
-            self.speak_text("Dieses Lernspiel kenne ich leider nicht. Möchtest du wissen, welche Lernspiele ich kenne?")
+            self.speak_text("Dieses Lernspiel kenne ich leider nicht. Möchtest du wissen, welche Lernspiele ich kenne?", watchListConfirmation)
             while(1):
-                self.handler.result = self.listen()
+                if self.handler.result == "":
+                    self.handler.result = self.listen()
                 if not self.handler.result:
                     return
                 print(self.handler.result)
@@ -482,7 +491,7 @@ class GameLoop(SpeechLoop):
                     break
                 else:
                     self.handler.result = ""
-                    self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Lernspiele ich kenne?")
+                    self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Lernspiele ich kenne?", watchListConfirmation)
             
             if self.handler.result == "":
-                self.speak_text("Welches Lernspiel möchtest du denn gerne spielen?")
+                self.speak_text("Welches Lernspiel möchtest du denn gerne spielen?", watchListWords)

@@ -52,14 +52,14 @@ class Handler:
     def checkForSleep(self) -> bool:
         divTime = time.time() - self.lastInteraction
         print(f'Zeit seit letzter Interaktion: {divTime}')
-        if divTime > 60:
+        if divTime > 20:
             self.speechLoop = self.speechLoopDict["sleepLoop"]
             return True
         return False
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["gameLoop"]
+        self.speechLoop = self.speechLoopDict["personalizeLoop"]
         
         while 1:
             self.speechLoop.play()
