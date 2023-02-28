@@ -101,6 +101,6 @@ class ImagePlayer:
     def resizeImage(self, image:Image) -> Image:
         iWidth, iHeight = image.size
         if((self.wWidth / iHeight) < (self.wHeight / iHeight)):
-            return image.resize(self.wWidth, (int(iHeight * (self.wWidth / iWidth))), Image.Resampling.NEAREST)
+            return image.resize(self.wWidth, (int(iHeight * (self.wWidth / iWidth))), resample=Image.LANCZOS)
         else:
-            return image.resize((int(iWidth* (self.wHeight / iHeight)), self.wHeight), Image.Resampling.NEAREST)
+            return image.resize((int(iWidth* (self.wHeight / iHeight)), self.wHeight), resample=Image.LANCZOS)
