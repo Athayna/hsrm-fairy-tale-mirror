@@ -21,33 +21,37 @@ class SpeechLoop():
 
     def listen(self, showPictures=True) -> str:
         """Method for listening to user input"""
-        
-        with sr.Microphone() as source:
-            r = sr.Recognizer()
-            while(1):
-                try:
-                    print(f'sleeping: {self.handler.sleeping}')
-                    if not self.handler.sleeping and self.handler.checkForSleep():
-                        return ''
-                    print("Adjusting ambient noise")
-                    r.adjust_for_ambient_noise(source, duration=0.5)
-                    print("Listening...")
-                    if showPictures:
-                        self.handler.imagePlayer.setImage("dog")
-                    audio = r.listen(source, timeout=5)
-                    print("Interpreting input")
-                    if showPictures:
-                        self.handler.imagePlayer.setImage("cat")
-                    result = r.recognize_google(audio, language="de-DE").lower()
-                    print(f'Understood {result}, returning self.handler.result')
-                    self.handler.lastInteraction = time.time()
-                    return result.lower()
-                except sr.RequestError as e:
-                    print(f'Could not request self.handler.results; {e}')
-                except sr.UnknownValueError:
-                    print("unknown error occurred")
-                except sr.WaitTimeoutError:
-                    print("Listen Timeout")
+        while 1:
+            try:
+                with sr.Microphone() as source:
+                    r = sr.Recognizer()
+                    while(1):
+                        try:
+                            print(f'sleeping: {self.handler.sleeping}')
+                            if not self.handler.sleeping and self.handler.checkForSleep():
+                                return ''
+                            print("Adjusting ambient noise")
+                            r.adjust_for_ambient_noise(source, duration=0.5)
+                            print("Listening...")
+                            if showPictures:
+                                self.handler.imagePlayer.setImage("dog")
+                            audio = r.listen(source, timeout=5)
+                            print("Interpreting input")
+                            if showPictures:
+                                self.handler.imagePlayer.setImage("cat")
+                            result = r.recognize_google(audio, language="de-DE").lower()
+                            print(f'Understood {result}, returning self.handler.result')
+                            self.handler.lastInteraction = time.time()
+                            return result.lower()
+                        except sr.RequestError as e:
+                            print(f'Could not request self.handler.results; {e}')
+                        except sr.UnknownValueError:
+                            print("unknown error occurred")
+                        except sr.WaitTimeoutError:
+                            print("Listen Timeout")
+            except OSError:
+                time.sleep(0.5)
+                        
 
     def speak_text(self, command, watchListWords=watchListWords["abbruch"]) -> None:
         print(f'speaktext array: {watchListWords}')
