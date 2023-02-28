@@ -9,8 +9,13 @@ class MainLoop(SpeechLoop):
         super().__init__(handler)
 
     def play(self) -> None:
-        self.handler.result = self.listen()
 
+        if self.handler.result == "":
+            self.handler.result = self.listen()
+
+        if not self.handler.result:
+            return
+        
         if self.handler.checkForAbort():
             pass
 
@@ -36,6 +41,8 @@ class MainLoop(SpeechLoop):
             self.speak_text("Möchtest du wissen, welche Märchen ich kenne?")
             while(1):
                 self.handler.result = self.listen()
+                if not self.handler.result:
+                    return
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.handler.result = ""
                     self.speak_text("Ich kenne")
@@ -68,6 +75,8 @@ class MainLoop(SpeechLoop):
             self.speak_text("Ich habe dich nicht verstanden. Möchtest du wissen, was ich alles kann?")
             while(1):
                 self.handler.result = self.listen()
+                if not self.handler.result:
+                    return
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.handler.result = ""
                     self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
@@ -78,3 +87,6 @@ class MainLoop(SpeechLoop):
                 else:
                     self.handler.result = ""
                     self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, was ich alles kann?")
+
+            if self.handler.result == "":
+                self.speak_text("Was möchtest du gerne machen?")

@@ -43,6 +43,8 @@ class WelcomeLoop(SpeechLoop):
                     self.speak_text("Ohje da hab ich mir was falsches gemerkt, das tut mir leid. Du gehst also in den Kindergarten?") 
                     while(1):
                         self.handler.result = self.listen()
+                        if not self.handler.result:
+                            return
                         if any(x in self.handler.result for x in ("ja", "genau", "richtig", "klar", "sicher")):
                             self.handler.result = ""
                             self.handler.user.school = True
@@ -74,6 +76,8 @@ class WelcomeLoop(SpeechLoop):
                     self.speak_text("Ohje da hab ich mir was falsches gemerkt, das tut mir leid. Du gehst also zur Schule?") 
                     while(1):
                         self.handler.result = self.listen()
+                        if not self.handler.result:
+                            return
                         if any(x in self.handler.result for x in ("ja", "genau", "richtig", "klar", "sicher")):
                             self.handler.result = ""
                             self.handler.user.school = True

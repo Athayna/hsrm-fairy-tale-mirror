@@ -18,5 +18,6 @@ class SleepLoop(SpeechLoop):
         print('sleepy sleepy')
 
         if any(x in self.handler.result for x in ("spiegel", "spieglein")):
+            self.handler.result = ""
             self.handler.sleeping = False
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("welcomeLoop"))

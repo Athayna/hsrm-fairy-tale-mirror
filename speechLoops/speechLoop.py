@@ -177,7 +177,10 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
         for word in watchListWords:
             if word in result:
                 print("found matching word")
-                pipeconnection.send(word)
+                if word == "weiter" or word == "überspringen":
+                    pipeconnection.send("")
+                else:
+                    pipeconnection.send(word)
                 if killswitch:
                     killswitch.set()
                 try:
