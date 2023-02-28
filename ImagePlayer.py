@@ -1,7 +1,5 @@
 import tkinter as tk
 from PIL import ImageTk, Image, ImageFont, ImageDraw
-import text_to_image
-import io
 
 class ImagePlayer:
     """ImagePlayer class that displays images in fullscreen mode."""
