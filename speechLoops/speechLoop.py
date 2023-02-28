@@ -157,40 +157,45 @@ def speak_tale(command) -> None:
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     print(f'listenkill array: {watchListWords}')
     def listenWithoutClass():
-        with sr.Microphone() as source:
-            r = sr.Recognizer()
+        while 1:
+            try:
+                with sr.Microphone() as source:
+                    r = sr.Recognizer()
+                    while(1):
+                        try:
+                            print("Adjusting ambient noise in kill")
+                            r.adjust_for_ambient_noise(source, duration=0.5)
+                            print("Listening...")
+                            audio = r.listen(source)
+                            print("Interpreting input in kill")
+                            result = r.recognize_google(audio, language="de-DE").lower()
+                            print(f'Understood {result}, returning self.handler.result in kill')
+                            return result.lower()
+                        except sr.RequestError as e:
+                            print(f'Could not request self.handler.results; {e} in kill')
+                        except sr.UnknownValueError:
+                            print("unknown error occurred in kill")    
+            except OSError:
+                time.sleep(0.5)
+                
             while(1):
-                try:
-                    print("Adjusting ambient noise in kill")
-                    r.adjust_for_ambient_noise(source, duration=0.5)
-                    print("Listening...")
-                    audio = r.listen(source)
-                    print("Interpreting input in kill")
-                    result = r.recognize_google(audio, language="de-DE").lower()
-                    print(f'Understood {result}, returning self.handler.result in kill')
-                    return result.lower()
-                except sr.RequestError as e:
-                    print(f'Could not request self.handler.results; {e} in kill')
-                except sr.UnknownValueError:
-                    print("unknown error occurred in kill")    
-    
-    while(1):
-        result = listenWithoutClass()
-        print (result)
-        print (watchListWords)
-        for word in watchListWords:
-            if word in result:
-                print("found matching word")
-                if word == "weiter" or word == "überspringen":
-                    pipeconnection.send("")
-                else:
-                    pipeconnection.send(word)
-                if killswitch:
-                    killswitch.set()
-                try:
-                    while(pipeconnection.poll(0.100)):
-                        pass
-                finally:
-                    #os.kill(thread, SIGINT)
-                    os.kill(thread, SIGKILL)
-                    return
+                result = listenWithoutClass()
+                print (result)
+                print (watchListWords)
+                for word in watchListWords:
+                    if word in result:
+                        print("found matching word")
+                        if word == "weiter" or word == "überspringen":
+                            pipeconnection.send("")
+                        else:
+                            pipeconnection.send(word)
+                        if killswitch:
+                            killswitch.set()
+                        try:
+                            while(pipeconnection.poll(0.100)):
+                                pass
+                        finally:
+                            #os.kill(thread, SIGINT)
+                            os.kill(thread, SIGKILL)
+                            return
+            
