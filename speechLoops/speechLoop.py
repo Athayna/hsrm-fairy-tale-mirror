@@ -6,7 +6,7 @@ import os
 import re
 import time
 import multiprocessing
-from signal import SIGINT
+from signal import SIGINT, SIGKILL
 
 ######################################## BASE LOOP - ABSTRACT ########################################
 watchListWords = {
@@ -187,5 +187,6 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
                     while(pipeconnection.poll(0.100)):
                         pass
                 finally:
-                    os.kill(thread, SIGINT)
+                    #os.kill(thread, SIGINT)
+                    os.kill(thread, SIGKILL)
                     return
