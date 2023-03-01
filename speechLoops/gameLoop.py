@@ -475,6 +475,7 @@ class GameLoop(SpeechLoop):
             correctAnswers = 0
             beendeSpiel = 5
             level = self.handler.user.numberGame//5
+            level = 2
             getTimeHour = 0
             getTimeMinute = 0
             if level == 0:

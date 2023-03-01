@@ -42,6 +42,9 @@ class SpeechLoop():
                     result = r.recognize_google(audio, language="de-DE").lower()
                     print(f'Understood {result}, returning self.handler.result')
                     self.handler.lastInteraction = time.time()
+                    if any(x in result.lower() for x in ("tschüss", "gute nacht", "ausschalten")):
+                        result = ""
+                        self.handler.setSpeechLoop(self.handler.getSpeechLoop("sleepLoop"))
                     return result.lower()
                 except sr.RequestError as e:
                     print(f'Could not request self.handler.results; {e}')
