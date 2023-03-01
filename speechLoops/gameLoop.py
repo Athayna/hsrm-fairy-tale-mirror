@@ -98,7 +98,7 @@ class GameLoop(SpeechLoop):
                     self.handler.result = ""
                     self.speak_text(f'{tempVal} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Wort verrate, dass da steht.', watchListWordsGameSol)
 
-            self.handler.imagePlayer.setImage("cat")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             if correctAnswers >= 4:
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein richtiger Profi im Lesen!', ["weiter", "überspringen"])
             elif correctAnswers < 4:
@@ -200,7 +200,7 @@ class GameLoop(SpeechLoop):
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir den Buchstaben verrate, der da steht.', watchListWordsGameSol)
                     self.handler.result = ""
 
-            self.handler.imagePlayer.setImage("cat")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             if correctAnswers >= 4:
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst dein Alphabet bestens! Trau dich gerne mal an das Wort für Wort Spiel.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
@@ -334,7 +334,7 @@ class GameLoop(SpeechLoop):
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
-            self.handler.imagePlayer.setImage("cat")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             if correctAnswers >= 4:
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
@@ -458,7 +458,7 @@ class GameLoop(SpeechLoop):
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
-            self.handler.imagePlayer.setImage("cat")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             if correctAnswers >= 4:
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
@@ -632,7 +632,7 @@ class GameLoop(SpeechLoop):
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir die Uhrzeit verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
-            self.handler.imagePlayer.setImage("cat")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             if correctAnswers >= 4:
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst deine Zeit!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:

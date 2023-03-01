@@ -17,7 +17,7 @@ class WelcomeLoop(SpeechLoop):
     def play(self) -> None:
         """This method is called when the loop is started. It is used to start the speech recognition and to set the next loop."""
 
-        self.handler.imagePlayer.setImage("cat")
+        self.handler.imagePlayer.setImage("gesicht-lachen")
 
         if (datetime.datetime.now().hour < 10):
             self.speak_text(f'Guten Morgen {self.handler.user.name}, komm putz dir die Zähne mit mir!', watchListSkipTask)
@@ -25,7 +25,7 @@ class WelcomeLoop(SpeechLoop):
             #wait 3 min
             self.speak_text(f'Und jetzt noch schnell die Haare kämmen und anziehen, dann kann der Tag losgehen!', watchListSkipTask)
             self.handler.result = ""
-        elif (datetime.datetime.now().hour > 12 and datetime.datetime.now().hour < 15) and datetime.date.isoweekday() in range(1, 5) :
+        elif (datetime.datetime.now().hour > 12 and datetime.datetime.now().hour < 17) and datetime.date.isoweekday(datetime.datetime.now()) in range(1, 5) :
             if self.handler.user.school:
                 self.speak_text(f'Guten Tag {self.handler.user.name}, na wie war die Schule?', watchListDay)
                 if self.handler.result == "":

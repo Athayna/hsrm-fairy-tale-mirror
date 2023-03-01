@@ -59,7 +59,7 @@ class Handler:
 
     def start(self) -> None:
         self.fillDict()
-        self.speechLoop = self.speechLoopDict["personalizeLoop"]
+        self.speechLoop = self.speechLoopDict["welcomeLoop"]
         
         while 1:
             self.speechLoop.play()

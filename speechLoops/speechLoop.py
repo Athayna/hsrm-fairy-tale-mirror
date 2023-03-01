@@ -34,11 +34,11 @@ class SpeechLoop():
                     r.adjust_for_ambient_noise(source, duration=0.5)
                     print("Listening...")
                     if showPictures:
-                        self.handler.imagePlayer.setImage("dog")
+                        self.handler.imagePlayer.setImage("gesicht-denken")
                     audio = r.listen(source, timeout=5)
                     print("Interpreting input")
                     if showPictures:
-                        self.handler.imagePlayer.setImage("cat")
+                        self.handler.imagePlayer.setImage("gesicht-lachen")
                     result = r.recognize_google(audio, language="de-DE").lower()
                     print(f'Understood {result}, returning self.handler.result')
                     self.handler.lastInteraction = time.time()

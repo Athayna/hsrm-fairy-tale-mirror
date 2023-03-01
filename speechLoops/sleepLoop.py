@@ -11,7 +11,7 @@ class SleepLoop(SpeechLoop):
 
         if not self.handler.sleeping:
             self.handler.sleeping = True
-            self.handler.imagePlayer.setImage("schlaf")
+            self.handler.imagePlayer.setImage("gesicht-schlafen")
 
         self.handler.result = self.listen(showPictures=False)
 

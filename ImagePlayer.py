@@ -10,12 +10,15 @@ class ImagePlayer:
         self.wWidth = self.window.winfo_screenwidth()
         self.wHeight = self.window.winfo_screenheight()
         self.imageDict = dict()
-        self.image = Image.open("./pictures/cat.png")
-        self.imageTxt = "cat"
+        self.image = Image.open("./pictures/face-smiling-white.png")
+        self.imageTxt = "gesicht-lachen"
         self.path = "./pictures/"
         self.imageToDisplay = ImageTk.PhotoImage(self.image)
 
     def fillDict(self) -> None:
+        self.imageDict.update({"gesicht-schlafen": "face-sleeping-white.png"})
+        self.imageDict.update({"gesicht-lachen": "face-smiling-white.png"})
+        self.imageDict.update({"gesicht-denken": "face-thinking-white.png"})
         self.imageDict.update({"cat": "cat.png"})
         self.imageDict.update({"dog": "dog.jpg"})
         self.imageDict.update({"snow_white": "snow_white.png"})
@@ -68,7 +71,7 @@ class ImagePlayer:
     def start(self) -> None:
         self.fillDict()
         self.window.attributes("-fullscreen", True)
-        self.setImage("cat")
+        self.setImage("gesicht-lachen")
         self.window.mainloop()
 
     def setImage(self, imageKey:str) -> None:
