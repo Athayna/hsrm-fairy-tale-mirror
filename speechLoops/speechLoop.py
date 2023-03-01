@@ -23,7 +23,7 @@ class SpeechLoop():
     def listen(self, showPictures=True) -> str:
         """Method for listening to user input"""
         
-        with sr.Microphone(device_index=2) as source:
+        with sr.Microphone() as source:
             r = sr.Recognizer()
             while(1):
                 try:
@@ -155,7 +155,7 @@ def speak_tale(command) -> None:
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     print(f'listenkill array: {watchListWords}')
     def listenWithoutClass():
-        with sr.Microphone(device_index=2) as source:
+        with sr.Microphone() as source:
             r = sr.Recognizer()
             while(1):
                 try:

@@ -475,51 +475,90 @@ class GameLoop(SpeechLoop):
             correctAnswers = 0
             beendeSpiel = 5
             level = self.handler.user.numberGame//5
+            getTimeHour = 0
+            getTimeMinute = 0
             if level == 0:
-                getWatch = random.randint(1, 12)
-                
+                getTimeHour = random.randint(1, 12)
             elif level == 1:
-                1
+                # normally until 12 but pictures only until hour 4 -> getTimeHour = random.randint(1, 12)
+                getTimeHour = random.randint(1, 4)
+                getTimeMinute = random.randint(0, 3)*15
             elif level >=2:
-                2
-            self.handler.imagePlayer.setTextImage(displayCalc)
-            print(displayCalc)
+                getTimeHour = random.randint(1, 12)
+                getTimeMinute = random.randint(0, 12)*5                
+                # normally all hours with all 5min options but not all pictures included so switch case for available options
+                # 5 10 35 40
+                interimSolution = getTimeHour//4 + 1
+                if interimSolution == 1:
+                    getTimeHour = 5
+                    getTimeMinute = 10
+                elif interimSolution == 2:
+                    getTimeHour = 8
+                    getTimeMinute = 5
+                elif interimSolution == 3:
+                    getTimeHour = 5
+                    getTimeMinute = 35
+                elif interimSolution == 4:
+                    getTimeHour = 8
+                    getTimeMinute = 40
+            if getTimeMinute:
+                self.handler.imagePlayer.setTimeImage(f'{getTimeHour}{getTimeMinute}')
+            else:
+                self.handler.imagePlayer.setTimeImage(getTimeHour)
+            print(f'{getTimeHour}{getTimeMinute}')
             while(beendeSpiel):
                 if self.handler.result == "":
-                    self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
+                    self.speak_text("Welche Uhrzeit wird hier angezeigt?")
                     self.handler.result = self.listen(showPictures=False)
                 if not self.handler.result:
                     return
-                if str(guessSolution) in alpha2digit(self.handler.result, "de"):
+                if getTimeMinute == 0:
+                    self.handler.result += " 0"
+                if str(getTimeHour) in alpha2digit(self.handler.result, "de") and (str(getTimeMinute) in alpha2digit(self.handler.result, "de") or getTimeMinute == 15 and "viertel nach" in self.handler.result or getTimeMinute == 30 and "halb" in self.handler.result or getTimeMinute == 45 and "viertel vor" in self.handler.result):
                     self.handler.result = ""
                     correctAnswers += 1
                     beendeSpiel -= 1
-                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}, das stimmt. Weiter so!', watchListWordsGame)
+                    if getTimeMinute:
+                        if getTimeMinute == 15:
+                            self.speak_text(f'Super {self.handler.user.name}! Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch viertel nach {getTimeHour} genannt, das stimmt. Weiter so!', watchListWordsGame)
+                        elif getTimeMinute == 30:
+                            self.speak_text(f'Super {self.handler.user.name}! Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch halb {getTimeHour} genannt, das stimmt. Weiter so!', watchListWordsGame)
+                        elif getTimeMinute == 45:
+                            self.speak_text(f'Super {self.handler.user.name}! Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch viertel vor {getTimeHour+1} genannt, das stimmt. Weiter so!', watchListWordsGame)
+                        else:
+                            self.speak_text(f'Super {self.handler.user.name}! Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, das stimmt. Weiter so!', watchListWordsGame)
+                    else:
+                        self.speak_text(f'Super {self.handler.user.name}! Die Uhr zeigt {getTimeHour} Uhr, das stimmt. Weiter so!', watchListWordsGame)
+
                     if beendeSpiel:
                         if level == 0:
-                            getNum1 = random.randint(0, 5)
-                            getNum2 = random.randint(0, 5)
-                            guessSolution = getNum1 + getNum2
-                            displayCalc = f'{getNum1} + {getNum2} ='
+                            getTimeHour = random.randint(1, 12)
                         elif level == 1:
-                            getNum1 = random.randint(0, 10)
-                            getNum2 = random.randint(0, (10-getNum1))
-                            guessSolution = getNum1 + getNum2
-                            displayCalc = f'{getNum1} + {getNum2} ='
+                            # normally until 12 but pictures only until hour 4 -> getTimeHour = random.randint(1, 12)
+                            getTimeHour = random.randint(1, 4)
+                            getTimeMinute = random.randint(0, 3)*15
                         elif level >=2:
-                            chooseArithmetic = random.randint(0, 1)
-                            if chooseArithmetic:
-                                getNum1 = random.randint(0, (5*level))
-                                getNum2 = random.randint(0, getNum1)
-                                guessSolution = getNum1 - getNum2
-                                displayCalc = f'{getNum1} - {getNum2} ='
-                            else:
-                                getNum1 = random.randint(0, (5*level))
-                                getNum2 = random.randint(0, (5*level))
-                                guessSolution = getNum1 + getNum2
-                                displayCalc = f'{getNum1} + {getNum2} ='
-                        print(displayCalc)
-                        self.handler.imagePlayer.setTextImage(displayCalc)
+                            getTimeHour = random.randint(1, 12)
+                            getTimeMinute = random.randint(0, 12)*5                
+                            # normally all hours with all 5min options but not all pictures included so switch case for available options
+                            # 5 10 35 40
+                            interimSolution = getTimeHour//4 + 1
+                            if interimSolution == 1:
+                                getTimeHour = 5
+                                getTimeMinute = 10
+                            elif interimSolution == 2:
+                                getTimeHour = 8
+                                getTimeMinute = 5
+                            elif interimSolution == 3:
+                                getTimeHour = 5
+                                getTimeMinute = 35
+                            elif interimSolution == 4:
+                                getTimeHour = 8
+                                getTimeMinute = 40
+                        if getTimeMinute:
+                            self.handler.imagePlayer.setTimeImage(f'{getTimeHour}{getTimeMinute}')
+                        else:
+                            self.handler.imagePlayer.setTimeImage(getTimeHour)
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
@@ -548,39 +587,54 @@ class GameLoop(SpeechLoop):
                 elif any(x in self.handler.result for x in ("lösung", "sag es mir", "ergebnis")):
                     self.handler.result = ""
                     beendeSpiel -= 1
-                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                    if getTimeMinute:
+                        if getTimeMinute == 15:
+                            self.speak_text(f'Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch viertel nach {getTimeHour} genannt. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                        elif getTimeMinute == 30:
+                            self.speak_text(f'Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch halb {getTimeHour} genannt. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                        elif getTimeMinute == 45:
+                            self.speak_text(f'Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}, auch viertel vor {getTimeHour+1} genannt. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                        else:
+                            self.speak_text(f'Die Uhr zeigt {getTimeHour} Uhr {getTimeMinute}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                    else:
+                        self.speak_text(f'Die Uhr zeigt {getTimeHour} Uhr. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+
                     if beendeSpiel:
                         if level == 0:
-                            getNum1 = random.randint(0, 5)
-                            getNum2 = random.randint(0, 5)
-                            guessSolution = getNum1 + getNum2
-                            displayCalc = f'{getNum1} + {getNum2} ='
+                            getTimeHour = random.randint(1, 12)
                         elif level == 1:
-                            getNum1 = random.randint(0, 10)
-                            getNum2 = random.randint(0, (10-getNum1))
-                            guessSolution = getNum1 + getNum2
-                            displayCalc = f'{getNum1} + {getNum2} ='
+                            # normally until 12 but pictures only until hour 4 -> getTimeHour = random.randint(1, 12)
+                            getTimeHour = random.randint(1, 4)
+                            getTimeMinute = random.randint(0, 3)*15
                         elif level >=2:
-                            chooseArithmetic = random.randint(0, 1)
-                            if chooseArithmetic:
-                                getNum1 = random.randint(0, (5*level))
-                                getNum2 = random.randint(0, getNum1)
-                                guessSolution = getNum1 - getNum2
-                                displayCalc = f'{getNum1} - {getNum2} ='
-                            else:
-                                getNum1 = random.randint(0, (5*level))
-                                getNum2 = random.randint(0, (5*level))
-                                guessSolution = getNum1 + getNum2
-                                displayCalc = f'{getNum1} + {getNum2} ='
-                        print(displayCalc)
-                        self.handler.imagePlayer.setTextImage(displayCalc)
+                            getTimeHour = random.randint(1, 12)
+                            getTimeMinute = random.randint(0, 12)*5                
+                            # normally all hours with all 5min options but not all pictures included so switch case for available options
+                            # 5 10 35 40
+                            interimSolution = getTimeHour//4 + 1
+                            if interimSolution == 1:
+                                getTimeHour = 5
+                                getTimeMinute = 10
+                            elif interimSolution == 2:
+                                getTimeHour = 8
+                                getTimeMinute = 5
+                            elif interimSolution == 3:
+                                getTimeHour = 5
+                                getTimeMinute = 35
+                            elif interimSolution == 4:
+                                getTimeHour = 8
+                                getTimeMinute = 40
+                        if getTimeMinute:
+                            self.handler.imagePlayer.setTimeImage(f'{getTimeHour}{getTimeMinute}')
+                        else:
+                            self.handler.imagePlayer.setTimeImage(getTimeHour)
                 else:
-                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
+                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir die Uhrzeit verrate.', watchListWordsGameSol)
                     self.handler.result = ""
 
             self.handler.imagePlayer.setImage("cat")
             if correctAnswers >= 4:
-                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst deine Zeit!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
             print("Spiel vorbei")

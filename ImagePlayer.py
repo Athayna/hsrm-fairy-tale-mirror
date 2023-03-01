@@ -96,9 +96,10 @@ class ImagePlayer:
         self.imageTxt = imageText
         self.setImageWithPath("text.png")
 
-    def setWatchImage(self, imageName:str) -> None:
+    def setTimeImage(self, imageName:str) -> None:
         self.imageTxt = imageName
-        pathWatch = f'uhr{imageName}.png'
+        pathTime = f'./pictures/clock/uhr{imageName}.png'
+        self.setImageWithPath(pathTime)
 
     def resizeImage(self, image:Image) -> Image:
         iWidth, iHeight = image.size
