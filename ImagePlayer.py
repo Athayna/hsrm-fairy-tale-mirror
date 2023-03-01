@@ -73,9 +73,12 @@ class ImagePlayer:
 
     def setImage(self, imageKey:str) -> None:
         print("change pic")
-        print(self.imageDict.get(imageKey))
         self.imageTxt = imageKey
-        self.image = Image.open(f'{self.path}{self.imageDict.get(imageKey)}')
+        imagePath = f'{self.path}{self.imageDict.get(imageKey)}'
+        self.setImageWithPath(imagePath)
+    
+    def setImageWithPath(self, imagePath:str) -> None:
+        self.image = Image.open(imagePath)
         for img in self.window.winfo_children():
             img.destroy()
         self.imgToDisplay = ImageTk.PhotoImage(self.resizeImage(self.image))
@@ -90,13 +93,12 @@ class ImagePlayer:
         font = ImageFont.truetype("arial.ttf", fontsize)
         draw.text((200, 50), txt, font=font) 
         image.save('text.png')
+        self.imageTxt = imageText
+        self.setImageWithPath("text.png")
 
-        self.image = Image.open("text.png")
-        for img in self.window.winfo_children():
-            img.destroy()
-        self.imgToDisplay = ImageTk.PhotoImage(self.resizeImage(self.image))
-        labelToAdd = tk.Label(image=self.imgToDisplay, background="black")
-        labelToAdd.place(relx=0.5, rely=0.5, anchor="center")
+    def setWatchImage(self, imageName:str) -> None:
+        self.imageTxt = imageName
+        pathWatch = f'uhr{imageName}.png'
 
     def resizeImage(self, image:Image) -> Image:
         iWidth, iHeight = image.size

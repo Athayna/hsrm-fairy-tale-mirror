@@ -6,7 +6,8 @@ import os
 import re
 import time
 import multiprocessing
-from signal import SIGINT, SIGKILL
+#from signal import SIGKILL, 
+from signal import SIGINT
 
 ######################################## BASE LOOP - ABSTRACT ########################################
 watchListWords = {
@@ -22,7 +23,7 @@ class SpeechLoop():
     def listen(self, showPictures=True) -> str:
         """Method for listening to user input"""
         
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index=2) as source:
             r = sr.Recognizer()
             while(1):
                 try:
@@ -50,6 +51,7 @@ class SpeechLoop():
                     print("Listen Timeout")
 
     def speak_text(self, command, watchListWords=watchListWords["abbruch"]) -> None:
+        print("in speak text")
         print(f'speaktext array: {watchListWords}')
         readProcess = multiprocessing.Process(target=speak_tale, args=[command])          
         readProcess.start()
@@ -144,7 +146,7 @@ class SpeechLoop():
 
 def speak_tale(command) -> None:
     """Method for speaking a text with Google's text-to-speech API."""
-
+    print("in speak tale sprachausgabe")
     tts = gTTS(text=command, lang='de', slow=False)
     tts.save('tts.mp3')
     playsound('tts.mp3')
@@ -153,7 +155,7 @@ def speak_tale(command) -> None:
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     print(f'listenkill array: {watchListWords}')
     def listenWithoutClass():
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index=2) as source:
             r = sr.Recognizer()
             while(1):
                 try:
@@ -187,6 +189,6 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
                     while(pipeconnection.poll(0.100)):
                         pass
                 finally:
-                    #os.kill(thread, SIGINT)
-                    os.kill(thread, SIGKILL)
+                    os.kill(thread, SIGINT)
+                    #os.kill(thread, SIGKILL)
                     return

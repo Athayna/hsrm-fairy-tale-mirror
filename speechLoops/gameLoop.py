@@ -467,6 +467,126 @@ class GameLoop(SpeechLoop):
             self.handler.user.numberGame += correctAnswers
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
+
+        elif any(x in self.handler.result for x in ("tik", "tak", "uhr")):
+        ################################################ SPIEL - TikTak Uhrenspaß ################################################
+            self.handler.result = ""
+            self.speak_text("Los geht's mit TikTak Uhrenspaß.")
+            correctAnswers = 0
+            beendeSpiel = 5
+            level = self.handler.user.numberGame//5
+            if level == 0:
+                getWatch = random.randint(1, 12)
+                
+            elif level == 1:
+                1
+            elif level >=2:
+                2
+            self.handler.imagePlayer.setTextImage(displayCalc)
+            print(displayCalc)
+            while(beendeSpiel):
+                if self.handler.result == "":
+                    self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
+                    self.handler.result = self.listen(showPictures=False)
+                if not self.handler.result:
+                    return
+                if str(guessSolution) in alpha2digit(self.handler.result, "de"):
+                    self.handler.result = ""
+                    correctAnswers += 1
+                    beendeSpiel -= 1
+                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}, das stimmt. Weiter so!', watchListWordsGame)
+                    if beendeSpiel:
+                        if level == 0:
+                            getNum1 = random.randint(0, 5)
+                            getNum2 = random.randint(0, 5)
+                            guessSolution = getNum1 + getNum2
+                            displayCalc = f'{getNum1} + {getNum2} ='
+                        elif level == 1:
+                            getNum1 = random.randint(0, 10)
+                            getNum2 = random.randint(0, (10-getNum1))
+                            guessSolution = getNum1 + getNum2
+                            displayCalc = f'{getNum1} + {getNum2} ='
+                        elif level >=2:
+                            chooseArithmetic = random.randint(0, 1)
+                            if chooseArithmetic:
+                                getNum1 = random.randint(0, (5*level))
+                                getNum2 = random.randint(0, getNum1)
+                                guessSolution = getNum1 - getNum2
+                                displayCalc = f'{getNum1} - {getNum2} ='
+                            else:
+                                getNum1 = random.randint(0, (5*level))
+                                getNum2 = random.randint(0, (5*level))
+                                guessSolution = getNum1 + getNum2
+                                displayCalc = f'{getNum1} + {getNum2} ='
+                        print(displayCalc)
+                        self.handler.imagePlayer.setTextImage(displayCalc)
+                    continue
+                elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
+                    self.handler.result = ""
+                    self.speak_text("Möchtest du das Spiel wirklich beenden?", watchListConfirmation)
+                    while(1):
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
+                        if not self.handler.result:
+                            return
+                        if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
+                            self.handler.result = ""
+                            beendeSpiel = 0
+                            self.speak_text("Beenden...")
+                            break
+                        elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
+                            self.handler.result = ""
+                            self.speak_text("Das Spiel geht weiter.")
+                            self.handler.imagePlayer.setTextImage(displayCalc)
+                            break
+                        else:
+                            self.handler.result = ""
+                            self.speak_text("Ich habe dich leider nicht verstanden. Sicher, dass du das Spiel beenden willst?", watchListConfirmation)
+                elif any(x in self.handler.result for x in ("weiß", "keine")) and any(x in self.handler.result for x in ("nicht", "ahnung", "plan", "lust")):
+                    self.handler.result = ""
+                    self.speak_text("Dann rate doch einfach mal und ich sage dir, ob es das richtige war oder sag Lösung und ich verrate dir direkt, was das Ergebnis ist.", watchListWordsGameSol)
+                elif any(x in self.handler.result for x in ("lösung", "sag es mir", "ergebnis")):
+                    self.handler.result = ""
+                    beendeSpiel -= 1
+                    self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
+                    if beendeSpiel:
+                        if level == 0:
+                            getNum1 = random.randint(0, 5)
+                            getNum2 = random.randint(0, 5)
+                            guessSolution = getNum1 + getNum2
+                            displayCalc = f'{getNum1} + {getNum2} ='
+                        elif level == 1:
+                            getNum1 = random.randint(0, 10)
+                            getNum2 = random.randint(0, (10-getNum1))
+                            guessSolution = getNum1 + getNum2
+                            displayCalc = f'{getNum1} + {getNum2} ='
+                        elif level >=2:
+                            chooseArithmetic = random.randint(0, 1)
+                            if chooseArithmetic:
+                                getNum1 = random.randint(0, (5*level))
+                                getNum2 = random.randint(0, getNum1)
+                                guessSolution = getNum1 - getNum2
+                                displayCalc = f'{getNum1} - {getNum2} ='
+                            else:
+                                getNum1 = random.randint(0, (5*level))
+                                getNum2 = random.randint(0, (5*level))
+                                guessSolution = getNum1 + getNum2
+                                displayCalc = f'{getNum1} + {getNum2} ='
+                        print(displayCalc)
+                        self.handler.imagePlayer.setTextImage(displayCalc)
+                else:
+                    self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
+                    self.handler.result = ""
+
+            self.handler.imagePlayer.setImage("cat")
+            if correctAnswers >= 4:
+                self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
+            elif correctAnswers < 4:
+                self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
+            print("Spiel vorbei")
+            self.handler.user.numberGame += correctAnswers
+            self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
+            self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
         elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
             self.handler.result = ""
