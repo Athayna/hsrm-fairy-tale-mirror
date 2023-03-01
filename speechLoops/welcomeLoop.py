@@ -118,5 +118,7 @@ class WelcomeLoop(SpeechLoop):
             self.speak_text(f'Und jetzt noch schnell den Schlafanzug anziehen und danach kann ich dir eine Geschichte vorlesen!', watchListSkipTask)
             self.handler.result = ""
         else:
-            self.speak_text(f'Hallo {self.handler.user.name}, wie kann ich dir helfen?')
+            self.speak_text(f'Hallo {self.handler.user.name}')
+        
+        self.speak_text(f'Wie kann ich dir helfen?')
         self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
