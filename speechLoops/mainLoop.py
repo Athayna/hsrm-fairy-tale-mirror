@@ -30,6 +30,12 @@ class MainLoop(SpeechLoop):
         elif "wecker" in self.handler.result:
             self.handler.result = ""
             while 1:
+                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                    self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
+                    wecker = f'{getTimeHour}:{getTimeMinute}'
+                    timerProcess = multiprocessing.Process(target=set_Timer, args=[wecker])
+                    timerProcess.start()
+                    break
                 getTimeHour = 0
                 getTimeMinute = 0
                 hourSet = False
@@ -38,12 +44,6 @@ class MainLoop(SpeechLoop):
                     self.handler.result = self.listen()
                 if not self.handler.result:
                     return
-                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
-                    self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
-                    wecker = f'{getTimeHour}:{getTimeMinute}'
-                    timerProcess = multiprocessing.Process(target=set_Timer, args=[wecker])
-                    timerProcess.start()
-                    break
                 checkStringForNum = alpha2digit(self.handler.result, "de")
                 checkStringForNum = checkStringForNum.replace(":", " ")
                 if any(word.isdigit() for word in checkStringForNum.split(" ")):
