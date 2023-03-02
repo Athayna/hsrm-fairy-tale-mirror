@@ -25,6 +25,8 @@ class SpeechLoop():
         
         with sr.Microphone() as source:
             r = sr.Recognizer()
+            r.dynamic_energy_threshold = False
+            r.energy_threshold = 2000
             while(1):
                 try:
                     print(f'sleeping: {self.handler.sleeping}')
@@ -150,7 +152,7 @@ class SpeechLoop():
 def speak_tale(command) -> None:
     """Method for speaking a text with Google's text-to-speech API."""
     print("in speak tale sprachausgabe")
-    if command == "zaehne putzen":
+    if command == "zähne putzen":
         playsound('song-brushteeth.mp3')
     else:
         tts = gTTS(text=command, lang='de', slow=False)
@@ -164,7 +166,7 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
         with sr.Microphone() as source:
             r = sr.Recognizer()
             r.dynamic_energy_threshold = False
-            r.energy_threshold = 4000
+            r.energy_threshold = 6000
             while(1):
                 try:
                     print("Adjusting ambient noise in kill")

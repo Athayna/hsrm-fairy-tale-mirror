@@ -19,10 +19,10 @@ class WelcomeLoop(SpeechLoop):
 
         self.handler.imagePlayer.setImage("gesicht-lachen")
 
-        if (datetime.datetime.now().hour < 15):
+        if (datetime.datetime.now().hour < 10):
             self.speak_text(f'Guten Morgen {self.handler.user.name}, komm putz dir die Zähne mit mir!', watchListSkipTask)
             self.handler.imagePlayer.setImage("zahn")
-            self.speak_text("zaehne putzen", watchListSkipTask)
+            self.speak_text("zähne putzen", watchListSkipTask)
             self.speak_text(f'Und jetzt noch schnell die Haare kämmen und anziehen, dann kann der Tag losgehen!', watchListSkipTask)
             self.handler.result = ""
         elif (datetime.datetime.now().hour > 12 and datetime.datetime.now().hour < 16) and datetime.date.isoweekday(datetime.datetime.now()) in range(1, 5) :
@@ -113,8 +113,8 @@ class WelcomeLoop(SpeechLoop):
 
         elif (datetime.datetime.now().hour > 19):
             self.speak_text(f'Guten Abend {self.handler.user.name}, komm putz dir die Zähne mit mir!', watchListSkipTask)
-            self.handler.imagePlayer.setImage("cat2")
-            #wait 3 min
+            self.handler.imagePlayer.setImage("zahn")
+            self.speak_text("zaehne putzen", watchListSkipTask)
             self.speak_text(f'Und jetzt noch schnell den Schlafanzug anziehen und danach kann ich dir eine Geschichte vorlesen!', watchListSkipTask)
             self.handler.result = ""
         else:
