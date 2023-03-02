@@ -18,7 +18,7 @@ class PersonalizeLoop(SpeechLoop):
         # Name? -> String -> Richtig/Falsch; alt: "Sag ich nicht"
         
         self.speak_text("Hallo, ich bin dein magischer Märchenspiegel. Ich kann dir eine Geschichte vorlesen, mit dir Lernspiele spielen, das Wetter vorhersagen, dir die Zeit oder das Datum sagen und herausfinden, wer am schönsten in diesem Land ist."\
-                        "Um mit mir zu sprechen, sag einfach: Hallo Spiegel, Spieglein, Spieglein oder trete vor mich." \
+                        "um mit mir zu sprechen, sag einfach: Hallo Spiegel, Spieglein, Spieglein oder trete vor mich." \
                         "Zuerst möchte ich dich ein wenig kennenlernen.", watchListSkip)
         self.speak_text("Wie heißt du denn?", watchListSkip)
         while(1):
