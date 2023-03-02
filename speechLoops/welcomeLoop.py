@@ -19,7 +19,7 @@ class WelcomeLoop(SpeechLoop):
 
         self.handler.imagePlayer.setImage("gesicht-lachen")
 
-        if (datetime.datetime.now().hour < 10):
+        if (datetime.datetime.now().hour < 15):
             self.speak_text(f'Guten Morgen {self.handler.user.name}, komm putz dir die Zähne mit mir!', watchListSkipTask)
             self.handler.imagePlayer.setImage("zahn")
             self.speak_text("zähne putzen", watchListSkipTask)
