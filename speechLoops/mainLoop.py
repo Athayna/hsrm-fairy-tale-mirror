@@ -1,5 +1,7 @@
+import multiprocessing
 from speechLoops.speechLoop import SpeechLoop
 import datetime
+from text_to_num import alpha2digit
 
 watchListConfirmation = ["ja", "genau", "gern", "ok", "klar", "nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen"]
 watchListWords = ["zeit", "uhr", "wetter", "temp", "regen", "kalt", "warm", "heiß", "erzähl", "geschichte", "märchen", "spiel", "lern", "wer", "schönst"]
@@ -24,6 +26,56 @@ class MainLoop(SpeechLoop):
         elif any(x in self.handler.result for x in ("zeit", "uhr")):
             self.handler.result = ""
             self.speak_text(f'Es ist {datetime.datetime.now().strftime("%H:%M Uhr")}', watchListSkip)
+
+        elif "wecker" in self.handler.result:
+            self.handler.result = ""
+            while 1:
+                getTimeHour = 0
+                getTimeMinute = 0
+                hourSet = False
+                self.speak_text(f'Auf wieviel Uhr soll ich den Wecker stellen?', watchListSkip)
+                if self.handler.result == "":
+                    self.handler.result = self.listen()
+                if not self.handler.result:
+                    return
+                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                    self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
+                    wecker = f'{getTimeHour:getTimeMinute}'
+                    timerProcess = multiprocessing.Process(target=set_Timer, args=[wecker])
+                    break
+                checkStringForNum = alpha2digit(self.handler.result, "de")
+                if any(word.isdigit() for word in checkStringForNum.split(" ", ":")):
+                    for word in checkStringForNum.split(" ", ":"):
+                        if word.isdigit():
+                            getTimeHour = word
+                            hourSet = True
+                        if hourSet:
+                            if word.isdigit():
+                                getTimeMinute = word
+                                break
+                    if getTimeMinute:
+                        self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
+                    else:
+                        self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr stellen?', watchListConfirmation)
+                    while(1):
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
+                        if not self.handler.result:
+                            print("no result")
+                            return
+                        if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                            break
+                        elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
+                            self.handler.result = ""
+                            break
+                        else:
+                            self.handler.result = ""
+                            self.speak_text("Ich habe dich leider nicht verstanden.")
+                            if getTimeMinute:
+                                self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
+                            else:
+                                self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr stellen?', watchListConfirmation)                
+
 
         elif "datum" in self.handler.result:
             self.handler.result = ""
@@ -127,3 +179,12 @@ class MainLoop(SpeechLoop):
 
             if self.handler.result == "":
                 self.speak_text("Was möchtest du gerne machen?", watchListWords)
+
+
+def set_Timer(time) -> None:
+    """Method for setting a timer."""
+    print("in timer")
+    while not time in datetime.datetime.now().strftime("%H:%M Uhr"):
+        time.sleep(30)
+    if time in datetime.datetime.now().strftime("%H:%M Uhr"):
+        SpeechLoop.speak_text("wecker klingeln")

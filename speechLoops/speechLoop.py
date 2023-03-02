@@ -202,3 +202,4 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
                     os.kill(thread, SIGINT)
                     #os.kill(thread, SIGKILL)
                     return
+    
