@@ -67,6 +67,7 @@ class ImagePlayer:
         self.imageDict.update({"zauberin": "zauberin.png"})
         self.imageDict.update({"zwerge": "zwerg.png"})
         self.imageDict.update({"zwergen": "zwerg.png"})
+        self.imageDict.update({"zahn": "zahn.png"})
 
     def start(self) -> None:
         self.fillDict()

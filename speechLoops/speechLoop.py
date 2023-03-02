@@ -150,10 +150,13 @@ class SpeechLoop():
 def speak_tale(command) -> None:
     """Method for speaking a text with Google's text-to-speech API."""
     print("in speak tale sprachausgabe")
-    tts = gTTS(text=command, lang='de', slow=False)
-    tts.save('tts.mp3')
-    playsound('tts.mp3')
-    os.remove('tts.mp3')
+    if command == "zähne putzen":
+        playsound('kinderlied-zähneputzen.mp3')
+    else:
+        tts = gTTS(text=command, lang='de', slow=False)
+        tts.save('tts.mp3')
+        playsound('tts.mp3')
+        os.remove('tts.mp3')
 
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
     print(f'listenkill array: {watchListWords}')

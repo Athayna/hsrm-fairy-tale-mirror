@@ -29,6 +29,33 @@ class MainLoop(SpeechLoop):
             self.handler.result = ""
             self.speak_text(f'Heute ist der {datetime.datetime.now().strftime("%d.%m.%Y")}', watchListSkip)
 
+        elif "name" in self.handler.result:
+            self.handler.result = ""
+            self.speak_text("Wie soll ich dich denn nennen?", watchListSkip)
+            while(1):
+                self.handler.result = self.listen()
+                tempName = self.handler.result
+                if not self.handler.result:
+                    print("no result")
+                    return
+                self.handler.result = ""
+                print("bestätige name")
+                self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}', watchListConfirmation)
+                if self.handler.result == "":
+                    print("name richtig?")
+                    self.handler.result = self.listen()
+                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                    self.handler.result = ""
+                    self.handler.user.name = tempName
+                    self.speak_text(f'Hallo {self.handler.user.name}, es freut mich dich kennenzulernen!', watchListSkip)
+                    break
+                elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
+                    self.handler.result = ""
+                    self.speak_text("Tut mir leid. Wie soll ich dich nennen?", watchListSkip)
+                else:
+                    self.handler.result = ""
+                    self.speak_text("Ich habe dich leider nicht verstanden. Wie soll ich dich nennen? Du kannst mir auch nur einen Spitznamen nennen mit dem ich dich ansprechen kann.", watchListSkip)
+
         elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm", "heiß")):
             self.handler.result = ""
             weather = self.find_weather()
