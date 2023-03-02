@@ -48,13 +48,13 @@ class MainLoop(SpeechLoop):
                 checkStringForNum = checkStringForNum.replace(":", " ")
                 if any(word.isdigit() for word in checkStringForNum.split(" ")):
                     for word in checkStringForNum.split(" "):
-                        if word.isdigit():
-                            getTimeHour = word
-                            hourSet = True
                         if hourSet:
                             if word.isdigit():
                                 getTimeMinute = word
                                 break
+                        if word.isdigit():
+                            getTimeHour = word
+                            hourSet = True
                     if getTimeMinute:
                         self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
                     else:
