@@ -468,7 +468,7 @@ class GameLoop(SpeechLoop):
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
 
-        elif any(x in self.handler.result for x in ("tik", "tak", "uhr")):
+        elif any(x in self.handler.result for x in ("tic", "tac", "uhr")):
         ################################################ SPIEL - TikTak Uhrenspaß ################################################
             self.handler.result = ""
             self.speak_text("Los geht's mit TikTak Uhrenspaß.")
@@ -514,7 +514,7 @@ class GameLoop(SpeechLoop):
                     return
                 if getTimeMinute == 0:
                     self.handler.result += " 0"
-                if str(getTimeHour) in alpha2digit(self.handler.result, "de") and (str(getTimeMinute) in alpha2digit(self.handler.result, "de") or getTimeMinute == 15 and "viertel nach" in self.handler.result or getTimeMinute == 30 and "halb" in self.handler.result or getTimeMinute == 45 and "viertel vor" in self.handler.result):
+                if ((str(getTimeHour) or str(getTimeHour+12)) in alpha2digit(self.handler.result, "de")) and (str(getTimeMinute) in alpha2digit(self.handler.result, "de") or getTimeMinute == 15 and "viertel nach" in self.handler.result or getTimeMinute == 30 and "halb" in self.handler.result or getTimeMinute == 45 and ("viertel vor" or "dreiviertel") in self.handler.result):
                     self.handler.result = ""
                     correctAnswers += 1
                     beendeSpiel -= 1
