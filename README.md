@@ -26,7 +26,7 @@ The application was build within one semester. The development process contained
 
 Install Python and in any command line run:
 ```
-pip install speechrecognition gtts requests pillow pyaudio playsound==1.2.2
+pip install speechrecognition gtts requests pillow pyaudio playsound==1.2.2 opencv-python pandas numpy text2num
 ```
 You will need a window manager and desktop environment installed.
 

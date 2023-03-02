@@ -22,8 +22,7 @@ class PersonalizeLoop(SpeechLoop):
                         "Zuerst möchte ich dich ein wenig kennenlernen.", watchListSkip)
         self.speak_text("Wie heißt du denn?", watchListSkip)
         while(1):
-            #self.handler.result = self.listen()
-            self.handler.result = "stefanie"
+            self.handler.result = self.listen()
             print(f'result ist: {self.handler.result}')
             tempName = self.handler.result
             if not self.handler.result:
@@ -36,7 +35,6 @@ class PersonalizeLoop(SpeechLoop):
                 self.speak_text("Das finde ich aber schade. Dann nenn mir einfach einen Spitznamen mit dem ich dich ansprechen kann.", watchListSkip)
                 tempName = self.listen()
             print("bestätige name")
-            self.speak_text("Habe ich dich richtig verstanden?")
             self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}', watchListConfirmation)
             if self.handler.result == "":
                 print("name richtig?")

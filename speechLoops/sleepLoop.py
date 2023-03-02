@@ -34,6 +34,7 @@ class SleepLoop(SpeechLoop):
                 if motionProcess.is_alive():
                     motionProcess.terminate()
                 self.handler.setSpeechLoop(self.handler.getSpeechLoop("welcomeLoop"))
+                return
         
 def detectMotion(event):
     initialState = None
@@ -90,7 +91,7 @@ def detectMotion(event):
         else:
             diff = abs(initialDifference - mse)
             print(f'Else | Diff is: {diff}')
-            if (timeSinceSleep > 30) and (diff > 5 and diff < 20):
+            if (timeSinceSleep > 10) and (diff > 5 and diff < 20):
                 initialDifference = mse
                 event.set()
                 video.release()
