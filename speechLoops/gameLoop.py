@@ -381,7 +381,7 @@ class GameLoop(SpeechLoop):
                     self.handler.result = ""
                     correctAnswers += 1
                     beendeSpiel -= 1
-                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}, das stimmt. Weiter so!', watchListWordsGame)
+                    self.speak_text(f'Super {self.handler.user.name}! Das Ergebnis ist {guessSolution}. Das stimmt. Weiter so!', watchListWordsGame)
                     if beendeSpiel:
                         if level <= 5:
                             getNum1 = random.randint(1, level + 1)

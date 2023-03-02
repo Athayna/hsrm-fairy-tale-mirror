@@ -94,9 +94,9 @@ class ImagePlayer:
         image = Image.open('plain.png')
         draw = ImageDraw.Draw(image)
         txt = imageText
-        fontsize = 40  
+        fontsize = 80
         font = ImageFont.truetype("arial.ttf", fontsize)
-        draw.text((200, 50), txt, font=font) 
+        draw.text((100, 50), txt, font=font) 
         image.save('text.png')
         self.imageTxt = imageText
         self.setImageWithPath("text.png")

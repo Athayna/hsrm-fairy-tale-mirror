@@ -70,9 +70,11 @@ class WelcomeLoop(SpeechLoop):
                 elif any(x in self.handler.result for x in ("naja", "nein", "nö", "nicht")):
                     self.speak_text("Das ist wichtig, komm mach die mal zuerst, danach bin ich gerne weiter für dich da!", watchListSkipTask)
                     self.handler.result = ""
+                    self.handler.setSpeechLoop(self.handler.getSpeechLoop("sleepLoop"))
                 elif any(x in self.handler.result for x in ("keine Lust", "langweilig", "mach ich nicht", "gleich")):
                     self.speak_text("Die helfen dir aber damit du mal werden kannst, was du möchtest. Komm, mach mal deine Hausaufgaben. Danach können wir machen, was du möchtest.", watchListSkipTask) 
                     self.handler.result = ""
+                    self.handler.setSpeechLoop(self.handler.getSpeechLoop("sleepLoop"))
                 
                 else:
                     self.handler.result = ""
@@ -114,7 +116,7 @@ class WelcomeLoop(SpeechLoop):
         elif (datetime.datetime.now().hour > 19):
             self.speak_text(f'Guten Abend {self.handler.user.name}, komm putz dir die Zähne mit mir!', watchListSkipTask)
             self.handler.imagePlayer.setImage("zahn")
-            self.speak_text("zaehne putzen", watchListSkipTask)
+            self.speak_text("zähne putzen", watchListSkipTask)
             self.speak_text(f'Und jetzt noch schnell den Schlafanzug anziehen und danach kann ich dir eine Geschichte vorlesen!', watchListSkipTask)
             self.handler.result = ""
         else:
