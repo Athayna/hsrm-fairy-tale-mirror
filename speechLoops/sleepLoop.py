@@ -15,6 +15,7 @@ class SleepLoop(SpeechLoop):
     def play(self) -> None:
         """This method is called when the loop is started. It is used to start the speech recognition and to set the next loop."""
         if not self.handler.sleeping:
+            self.speak_text(f'Gute Nacht {self.handler.user.name}.')
             self.handler.sleeping = True
             self.handler.imagePlayer.setImage("gesicht-schlafen")
 
