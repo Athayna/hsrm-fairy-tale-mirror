@@ -151,7 +151,7 @@ def speak_tale(command) -> None:
     """Method for speaking a text with Google's text-to-speech API."""
     print("in speak tale sprachausgabe")
     if command == "zaehne putzen":
-        playsound('kinderlied-zähneputzen.mp3')
+        playsound('../song-brushteeth.mp3')
     else:
         tts = gTTS(text=command, lang='de', slow=False)
         tts.save('tts.mp3')
