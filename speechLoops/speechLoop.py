@@ -160,6 +160,8 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
+            r.dynamic_energy_threshold = False
+            r.energy_threshold = 4000
             while(1):
                 try:
                     print("Adjusting ambient noise in kill")
