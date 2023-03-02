@@ -27,6 +27,7 @@ class FairytaleLoop(SpeechLoop):
             print(self.handler)
             self.read_fairy_tale(readFairytale)
             print("Märchen vorbei")
+            self.handler.result = ""
             self.speak_text(f'Das Märchen ist zu Ende. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
         
