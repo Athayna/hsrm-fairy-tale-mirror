@@ -40,7 +40,7 @@ class MainLoop(SpeechLoop):
                     return
                 if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
                     self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
-                    wecker = f'{getTimeHour:getTimeMinute}'
+                    wecker = f'{getTimeHour}:{getTimeMinute}'
                     timerProcess = multiprocessing.Process(target=set_Timer, args=[wecker])
                     timerProcess.start()
                     break
