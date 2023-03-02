@@ -42,10 +42,12 @@ class MainLoop(SpeechLoop):
                     self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
                     wecker = f'{getTimeHour:getTimeMinute}'
                     timerProcess = multiprocessing.Process(target=set_Timer, args=[wecker])
+                    timerProcess.start()
                     break
                 checkStringForNum = alpha2digit(self.handler.result, "de")
-                if any(word.isdigit() for word in checkStringForNum.split(" ", ":")):
-                    for word in checkStringForNum.split(" ", ":"):
+                checkStringForNum = checkStringForNum.replace(":", " ")
+                if any(word.isdigit() for word in checkStringForNum.split(" ")):
+                    for word in checkStringForNum.split(" "):
                         if word.isdigit():
                             getTimeHour = word
                             hourSet = True
