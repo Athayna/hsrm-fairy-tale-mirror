@@ -2,6 +2,7 @@ import multiprocessing
 from speechLoops.speechLoop import SpeechLoop
 import datetime
 from text_to_num import alpha2digit
+import time
 
 watchListConfirmation = ["ja", "genau", "gern", "ok", "klar", "nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen"]
 watchListWords = ["zeit", "uhr", "wetter", "temp", "regen", "kalt", "warm", "heiß", "erzähl", "geschichte", "märchen", "spiel", "lern", "wer", "schönst"]
@@ -55,6 +56,7 @@ class MainLoop(SpeechLoop):
                         if word.isdigit():
                             getTimeHour = word
                             hourSet = True
+                    self.handler.result = ""
                     if getTimeMinute:
                         self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
                     else:
