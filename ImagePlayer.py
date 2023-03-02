@@ -57,6 +57,7 @@ class ImagePlayer:
         self.imageDict.update({"schloss": "schloss.png"})
         self.imageDict.update({"schneewittchen": "schneewittchen.png"})
         self.imageDict.update({"schnee": "schnee.png"})
+        self.imageDict.update({"schneeflocken": "schnee.png"})
         self.imageDict.update({"spindel": "spinnrad.png"})
         self.imageDict.update({"rapunzel": "rapunzel.png"})
         self.imageDict.update({"turm": "turm.png"})
