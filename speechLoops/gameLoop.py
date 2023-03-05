@@ -16,6 +16,8 @@ class GameLoop(SpeechLoop):
         super().__init__(handler)
 
     def play(self) -> None:
+
+        amount = 2
         
         if self.handler.result == "":
             self.handler.result = self.listen()
@@ -32,15 +34,15 @@ class GameLoop(SpeechLoop):
                          ["Hund", "Mund", "klug", "wenn", "dort"],
                          ["Spiel", "Kugel", "essen", "gehen", "lesen"],
                          ["Frosch", "Brunnen", "schlau", "rennen", "lustig"]]
-            level = self.handler.user.wordGame//5
+            level = self.handler.user.wordGame//amount
             correctAnswers = 0
-            beendeSpiel = 5
+            beendeSpiel = amount
             usedArray = wordArray[level].copy()
             getWordNum = random.randint(0, (len(usedArray))-1)
             guessWord = usedArray[getWordNum]
             self.handler.imagePlayer.setTextImage(guessWord)
-            print(guessWord)
             while(beendeSpiel):
+                print(guessWord)
                 if self.handler.result == "":
                     self.speak_text("Wie heißt das angezeigte Wort?")
                     self.handler.result = self.listen(showPictures=False)
@@ -56,7 +58,6 @@ class GameLoop(SpeechLoop):
                         getWordNum = random.randint(0, (len(usedArray))-1)
                         guessWord = usedArray[getWordNum]
                         self.handler.imagePlayer.setTextImage(guessWord)
-                    print(guessWord)
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
                     self.handler.result = ""
@@ -92,7 +93,6 @@ class GameLoop(SpeechLoop):
                             getWordNum = random.randint(0, (len(usedArray))-1)
                             guessWord = usedArray[getWordNum]
                         self.handler.imagePlayer.setTextImage(guessWord)
-                    print(guessWord)
                 else:
                     tempVal = self.handler.result
                     self.handler.result = ""
@@ -103,7 +103,6 @@ class GameLoop(SpeechLoop):
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein richtiger Profi im Lesen!', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
-            print("Spiel vorbei")
             self.handler.user.wordGame += correctAnswers
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
@@ -114,15 +113,15 @@ class GameLoop(SpeechLoop):
             self.speak_text("Los geht's mit ABC Künste. Um den Buchstaben zu erraten sag ein davor. Zum Beispiel, wenn da a steht, musst du ein a sagen, sonst verstehe ich dich leider nicht.", ["weiter", "überspringen"])
             alphabetArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
             correctAnswers = 0
-            beendeSpiel = 5
+            beendeSpiel = amount
             getAlphabetNum = random.randint(0, 51)
             if getAlphabetNum > 25:
                 guessAlphabet = alphabetArray[getAlphabetNum-26].upper()
             else:
                 guessAlphabet = alphabetArray[getAlphabetNum]
             self.handler.imagePlayer.setTextImage(guessAlphabet)
-            print(guessAlphabet)
             while(beendeSpiel):
+                print(guessAlphabet)
                 if self.handler.result == "":
                     self.speak_text("Wie heißt der angezeigte Buchstabe?")
                     self.handler.result = self.listen(showPictures=False)
@@ -163,7 +162,6 @@ class GameLoop(SpeechLoop):
                         else:
                             guessAlphabet = alphabetArray[getAlphabetNum]
                         self.handler.imagePlayer.setTextImage(guessAlphabet)
-                        print(guessAlphabet)
                 elif any(x == "ein" for x in self.handler.result.split()) and guessAlphabet.lower() in self.handler.result:
                     foundLetter = 0
                     for word in self.handler.result.split():
@@ -191,7 +189,6 @@ class GameLoop(SpeechLoop):
                             else:
                                 guessAlphabet = alphabetArray[getAlphabetNum]
                             self.handler.imagePlayer.setTextImage(guessAlphabet)
-                            print(guessAlphabet)
                         continue
                     else:  
                         self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir den Buchstaben verrate, der da steht.', watchListWordsGameSol)
@@ -205,7 +202,6 @@ class GameLoop(SpeechLoop):
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst dein Alphabet bestens! Trau dich gerne mal an das Wort für Wort Spiel.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Bald kannst du das ganze ABC.', ["weiter", "überspringen"])
-            print("Spiel vorbei")
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
 
@@ -214,8 +210,8 @@ class GameLoop(SpeechLoop):
             self.handler.result = ""
             self.speak_text("Los geht's mit Zahlenzauber.")
             correctAnswers = 0
-            beendeSpiel = 5
-            level = self.handler.user.numberGame//5
+            beendeSpiel = amount
+            level = self.handler.user.numberGame//amount
             if level == 0:
                 getNum1 = random.randint(0, 5)
                 getNum2 = random.randint(0, 5)
@@ -239,8 +235,9 @@ class GameLoop(SpeechLoop):
                     guessSolution = getNum1 + getNum2
                     displayCalc = f'{getNum1} + {getNum2} ='
             self.handler.imagePlayer.setTextImage(displayCalc)
-            print(displayCalc)
             while(beendeSpiel):
+                print(displayCalc)
+
                 if self.handler.result == "":
                     self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
                     self.handler.result = self.listen(showPictures=False)
@@ -274,7 +271,6 @@ class GameLoop(SpeechLoop):
                                 getNum2 = random.randint(0, (5*level))
                                 guessSolution = getNum1 + getNum2
                                 displayCalc = f'{getNum1} + {getNum2} ='
-                        print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
@@ -328,7 +324,6 @@ class GameLoop(SpeechLoop):
                                 getNum2 = random.randint(0, (5*level))
                                 guessSolution = getNum1 + getNum2
                                 displayCalc = f'{getNum1} + {getNum2} ='
-                        print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                 else:
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
@@ -339,7 +334,6 @@ class GameLoop(SpeechLoop):
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
-            print("Spiel vorbei")
             self.handler.user.numberGame += correctAnswers
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
@@ -349,8 +343,8 @@ class GameLoop(SpeechLoop):
             self.handler.result = ""
             self.speak_text("Los geht's mit Einmaleins Meister.")
             correctAnswers = 0
-            beendeSpiel = 5
-            level = self.handler.user.multGame//5
+            beendeSpiel = amount
+            level = self.handler.user.multGame//amount
             if level <= 5:
                 getNum1 = random.randint(1, level + 1)
                 getNum2 = random.randint(1, 10)
@@ -370,8 +364,8 @@ class GameLoop(SpeechLoop):
                     guessSolution = getNum1 * getNum2
                     displayCalc = f'{getNum1} x {getNum2} ='
             self.handler.imagePlayer.setTextImage(displayCalc)
-            print(displayCalc)
             while(beendeSpiel):
+                print(displayCalc)
                 if self.handler.result == "":
                     self.speak_text("Was ist das Ergebnis der angezeigten Rechnung?")
                     self.handler.result = self.listen(showPictures=False)
@@ -401,7 +395,6 @@ class GameLoop(SpeechLoop):
                                 getNum2 = random.randint(1, level + 1)
                                 guessSolution = getNum1 * getNum2
                                 displayCalc = f'{getNum1} x {getNum2} ='
-                        print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                     continue
                 elif any(x in self.handler.result for x in ("ende", "abbrechen", "stop")):
@@ -433,7 +426,6 @@ class GameLoop(SpeechLoop):
                     beendeSpiel -= 1
                     self.speak_text(f'Das Ergebnis war {guessSolution}. Versuch es immer weiter {self.handler.user.name}, du wirst immer besser je mehr du übst.', watchListWordsGame)
                     if beendeSpiel:
-                        print(level)
                         if level <= 5:
                             getNum1 = random.randint(1, level + 1)
                             getNum2 = random.randint(1, 10)
@@ -452,7 +444,6 @@ class GameLoop(SpeechLoop):
                                 getNum2 = random.randint(1, level + 1)
                                 guessSolution = getNum1 * getNum2
                                 displayCalc = f'{getNum1} x {getNum2} ='
-                        print(displayCalc)
                         self.handler.imagePlayer.setTextImage(displayCalc)
                 else:
                     self.speak_text(f'{self.handler.result} ist falsch. Entweder du rätst nochmal oder du sagst Lösung, damit ich dir das Ergebnis verrate.', watchListWordsGameSol)
@@ -463,7 +454,6 @@ class GameLoop(SpeechLoop):
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du bist ein Rechengenie!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
-            print("Spiel vorbei")
             self.handler.user.numberGame += correctAnswers
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
@@ -473,8 +463,8 @@ class GameLoop(SpeechLoop):
             self.handler.result = ""
             self.speak_text("Los geht's mit TikTak Uhrenspaß.")
             correctAnswers = 0
-            beendeSpiel = 5
-            level = self.handler.user.numberGame//5
+            beendeSpiel = amount
+            level = self.handler.user.numberGame//amount
             getTimeHour = 0
             getTimeMinute = 0
             if level == 0:
@@ -505,8 +495,8 @@ class GameLoop(SpeechLoop):
                 self.handler.imagePlayer.setTimeImage(f'{getTimeHour}{getTimeMinute}')
             else:
                 self.handler.imagePlayer.setTimeImage(getTimeHour)
-            print(f'{getTimeHour}{getTimeMinute}')
             while(beendeSpiel):
+                print(f'{getTimeHour}{getTimeMinute}')
                 if self.handler.result == "":
                     self.speak_text("Welche Uhrzeit wird hier angezeigt?")
                     self.handler.result = self.listen(showPictures=False)
@@ -637,7 +627,6 @@ class GameLoop(SpeechLoop):
                 self.speak_text(f'Wahnsinn {self.handler.user.name}, du kennst deine Zeit!.', ["weiter", "überspringen"])
             elif correctAnswers < 4:
                 self.speak_text(f'Immer weiter so {self.handler.user.name}. Du kannst mit jedem Spiel mehr.', ["weiter", "überspringen"])
-            print("Spiel vorbei")
             self.handler.user.numberGame += correctAnswers
             self.speak_text(f'Wenn du nochmal spielen möchtest, musst du Lernspiel sagen. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))
@@ -655,7 +644,6 @@ class GameLoop(SpeechLoop):
                     self.handler.result = self.listen()
                 if not self.handler.result:
                     return
-                print(self.handler.result)
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.handler.result = ""
                     self.speak_text("Ich kenne Wort für Wort, ABC Künste, Zahlenzauber, Einmaleins Meister und Tiktak Uhrenspaß.", watchListWords)

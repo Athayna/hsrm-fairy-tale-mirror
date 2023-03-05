@@ -27,10 +27,71 @@ class MainLoop(SpeechLoop):
         elif any(x in self.handler.result for x in ("zeit", "uhr")):
             self.handler.result = ""
             self.speak_text(f'Es ist {datetime.datetime.now().strftime("%H:%M Uhr")}', watchListSkip)
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)
+        
+        elif "wecker" in self.handler.result:
+            self.handler.result = ""
+            while 1:
+                if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                    self.handler.result = ""
+                    self.speak_text(f'Der Wecker ist gestellt.', watchListSkip)
+                    wecker = f'{getTimeHour}:{getTimeMinute}'
+                    self.handler.user.alarm = wecker
+                    break
+                getTimeHour = 0
+                getTimeMinute = 0
+                hourSet = False
+                self.speak_text(f'Auf wieviel Uhr soll ich den Wecker stellen?', watchListSkip)
+                if self.handler.result == "":
+                    self.handler.result = self.listen()
+                if not self.handler.result:
+                    return
+                if any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
+                    self.handler.result = ""
+                    break
+                checkStringForNum = alpha2digit(self.handler.result, "de")
+                checkStringForNum = checkStringForNum.replace(":", " ")
+                if any(word.isdigit() for word in checkStringForNum.split(" ")):
+                    for word in checkStringForNum.split(" "):
+                        if hourSet:
+                            if word.isdigit():
+                                getTimeMinute = word
+                                break
+                        if word.isdigit():
+                            getTimeHour = word
+                            hourSet = True
+                    self.handler.result = ""
+                    if getTimeMinute:
+                        self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
+                    else:
+                        self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr stellen?', watchListConfirmation)
+                        getTimeMinute = 00
+                    while(1):
+                        if self.handler.result == "":
+                            self.handler.result = self.listen()
+                        if not self.handler.result:
+                            return
+                        if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
+                            break
+                        elif any(x in self.handler.result for x in ("nein", "falsch", "nö")):
+                            self.handler.result = ""
+                            break
+                        else:
+                            self.handler.result = ""
+                            self.speak_text("Ich habe dich leider nicht verstanden.")
+                            if getTimeMinute:
+                                self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr {getTimeMinute} stellen?', watchListConfirmation)
+                            else:
+                                self.speak_text(f'Möchtest du den Wecker auf {getTimeHour} Uhr stellen?', watchListConfirmation)    
+                else:
+                    self.handler.result = ""
+                    self.speak_text("Ich habe dich leider nicht verstanden.")        
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)    
 
         elif "datum" in self.handler.result:
             self.handler.result = ""
             self.speak_text(f'Heute ist der {datetime.datetime.now().strftime("%d.%m.%Y")}', watchListSkip)
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)
 
         elif "name" in self.handler.result:
             self.handler.result = ""
@@ -39,13 +100,13 @@ class MainLoop(SpeechLoop):
                 self.handler.result = self.listen()
                 tempName = self.handler.result
                 if not self.handler.result:
-                    print("no result")
                     return
+                if any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
+                    self.handler.result = ""
+                    break
                 self.handler.result = ""
-                print("bestätige name")
                 self.speak_text(f'Habe ich dich richtig verstanden? Du heißt also {tempName}', watchListConfirmation)
                 if self.handler.result == "":
-                    print("name richtig?")
                     self.handler.result = self.listen()
                 if any(x in self.handler.result for x in ("ja", "genau", "richtig")):
                     self.handler.result = ""
@@ -58,6 +119,7 @@ class MainLoop(SpeechLoop):
                 else:
                     self.handler.result = ""
                     self.speak_text("Ich habe dich leider nicht verstanden. Wie soll ich dich nennen? Du kannst mir auch nur einen Spitznamen nennen mit dem ich dich ansprechen kann.", watchListSkip)
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)
 
         elif any(x in self.handler.result for x in ("wetter", "temp", "regen", "kalt", "warm", "heiß")):
             self.handler.result = ""
@@ -73,6 +135,7 @@ class MainLoop(SpeechLoop):
                 self.speak_text("Ein Tshirt mit Jäckchen und lange Hose reichen heute aus!")
             elif (weather["temperature"] > 25):
                 self.speak_text("Es ist sehr warm, ein Tshirt und eine kurze Hose reichen bestimmt! Denk daran genug zu trinken.", watchListSkip)
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)
         
         elif any(x in self.handler.result for x in ("erzähl", "geschichte", "märchen")):
             self.handler.result = ""
@@ -96,7 +159,8 @@ class MainLoop(SpeechLoop):
                 else:
                     self.handler.result = ""
                     self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, welche Märchen ich kenne?", watchListConfirmation)
-            self.speak_text("Welches Märchen soll ich dir vorlesen?", self.get_maerchen())
+            if self.handler.result == "":
+                self.speak_text("Welches Märchen soll ich dir vorlesen?", self.get_maerchen())
             
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("fairytaleLoop"))
 
@@ -108,6 +172,11 @@ class MainLoop(SpeechLoop):
         elif "wer" in self.handler.result and "schönst" in self.handler.result:
             self.handler.result = ""
             self.speak_text(f'{self.handler.user.name}, Du bist am Schönsten! Selbst das Schneewittchen, ueber den Bergen, bei den sieben Zwergen, ist nicht schoener als du.', watchListSkip)
+            self.speak_text("Was möchtest du gerne machen?", watchListWords)
+            
+        elif "was" in self.handler.result and "kann" in self.handler.result:
+            self.handler.result = ""
+            self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
 
         else:
             self.handler.result = ""
@@ -127,6 +196,3 @@ class MainLoop(SpeechLoop):
                 else:
                     self.handler.result = ""
                     self.speak_text("Ich habe dich leider nicht verstanden. Soll ich dir auflisten, was ich alles kann?", watchListConfirmation)
-
-            if self.handler.result == "":
-                self.speak_text("Was möchtest du gerne machen?", watchListWords)

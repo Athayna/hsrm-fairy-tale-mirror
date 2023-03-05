@@ -15,7 +15,6 @@ class FairytaleLoop(SpeechLoop):
             self.handler.result = self.listen()
 
         if not self.handler.result:
-            print("skip")
             return
 
         if any(fairytale in self.handler.result for fairytale in self.get_maerchen() ):
@@ -24,9 +23,8 @@ class FairytaleLoop(SpeechLoop):
                         self.handler.result = ""
                         readFairytale = fairytale
             self.speak_text(f'Hier ist die Geschichte von {readFairytale}:')
-            print(self.handler)
             self.read_fairy_tale(readFairytale)
-            print("Märchen vorbei")
+            self.handler.imagePlayer.setImage("gesicht-lachen")
             self.handler.result = ""
             self.speak_text(f'Das Märchen ist zu Ende. Was möchtest du gerne machen?', watchListMenu)
             self.handler.setSpeechLoop(self.handler.getSpeechLoop("mainLoop"))

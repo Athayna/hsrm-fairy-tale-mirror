@@ -51,6 +51,7 @@ class ImagePlayer:
         self.imageDict.update({"koenigssohn": "prinz.png"})
         self.imageDict.update({"koenigstochter": "prinzessin.png"})
         self.imageDict.update({"prinzessin": "prinzessin.png"})
+        self.imageDict.update({"koenigin": "prinzessin.png"})
         self.imageDict.update({"rapunzel": "rapunzel.png"})
         self.imageDict.update({"rotkaeppchen": "rotkäppchen.png"})
         self.imageDict.update({"schlaf": "schlafen.png"})

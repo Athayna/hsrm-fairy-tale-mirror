@@ -5,6 +5,9 @@ import cv2
 import time
 from datetime import datetime
 from numpy import sum
+import datetime
+
+watchListSkipTask = ["weiter", "überspringen", "wach", "fertig", "stop", "abbrechen", "aus"]
 
 class SleepLoop(SpeechLoop):
     """This is the sleep loop. It is the first loop that is called when the program starts."""
@@ -15,7 +18,12 @@ class SleepLoop(SpeechLoop):
     def play(self) -> None:
         """This method is called when the loop is started. It is used to start the speech recognition and to set the next loop."""
         if not self.handler.sleeping:
-            self.speak_text(f'Gute Nacht {self.handler.user.name}.')
+            if datetime.datetime.now().hour < 14:
+                self.speak_text(f'Schönen Tag {self.handler.user.name}.')
+            elif datetime.datetime.now().hour < 18:
+                self.speak_text(f'Tschüss {self.handler.user.name}.')
+            elif datetime.datetime.now().hour > 18:
+                self.speak_text(f'Gute Nacht {self.handler.user.name}.')
             self.handler.sleeping = True
             self.handler.imagePlayer.setImage("gesicht-schlafen")
 
@@ -24,16 +32,26 @@ class SleepLoop(SpeechLoop):
         motionProcess = multiprocessing.Process(target=detectMotion, args=[motionEvent])
         motionProcess.start()
 
+        alarmEvent = multiprocessing.Event()
+        if self.handler.user.alarm != "":
+            alarmProcess = multiprocessing.Process(target=checkAlarm, args=[alarmEvent, self.handler.user.alarm])
+            alarmProcess.start()
+
         while 1:
-            self.handler.result = self.listen(showPictures=False)
+            self.handler.result = self.listen(showPictures=False, sleepMode=True)
 
             print('sleepy sleepy')
-
-            if any(x in self.handler.result for x in ("spiegel", "spieglein")) or motionEvent.is_set():
+            if any(x in self.handler.result for x in ("spiegel", "spieglein")) or motionEvent.is_set() or alarmEvent.is_set():
                 self.handler.result = ""
                 self.handler.sleeping = False
                 if motionProcess.is_alive():
                     motionProcess.terminate()
+                if self.handler.user.alarm != "":
+                    if alarmProcess.is_alive():
+                        alarmProcess.terminate()
+                    if alarmEvent.is_set():
+                        self.handler.user.alarm = ""
+                        self.speak_text("wecker alarm abspielen", watchListSkipTask)
                 self.handler.setSpeechLoop(self.handler.getSpeechLoop("welcomeLoop"))
                 return
         
@@ -87,7 +105,6 @@ def detectMotion(event):
         print(f'Mse is: {mse}. InitialDifference is {initialDifference}')
         if initialDifference == 0:
             initialDifference = mse
-            print('if')
             continue
         else:
             diff = abs(initialDifference - mse)
@@ -101,3 +118,15 @@ def detectMotion(event):
 
     # releasing the video
     video.release()
+
+def checkAlarm(event, setTime):
+    print(f'{setTime}')
+    setTime = setTime.replace(":", " ")
+    timeSplit = setTime.split(" ")
+    while 1:
+        now = datetime.datetime.now()
+        if now.hour == int(timeSplit[0]) and now.minute >= int(timeSplit[1]):
+            print(f'alarm activated')
+            event.set()
+            return
+        time.sleep(30)

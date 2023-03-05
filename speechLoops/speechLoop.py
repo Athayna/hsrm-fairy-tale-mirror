@@ -20,7 +20,7 @@ class SpeechLoop():
     def __init__(self, handler) -> None:
         self.handler = handler
 
-    def listen(self, showPictures=True) -> str:
+    def listen(self, showPictures=True, sleepMode=False) -> str:
         """Method for listening to user input"""
         
         with sr.Microphone() as source:
@@ -54,10 +54,10 @@ class SpeechLoop():
                     print("unknown error occurred")
                 except sr.WaitTimeoutError:
                     print("Listen Timeout")
+                    if sleepMode:
+                        return ""
 
     def speak_text(self, command, watchListWords=watchListWords["abbruch"]) -> None:
-        print("in speak text")
-        print(f'speaktext array: {watchListWords}')
         readProcess = multiprocessing.Process(target=speak_tale, args=[command])          
         readProcess.start()
         conn1, conn2 = multiprocessing.Pipe()
@@ -65,7 +65,6 @@ class SpeechLoop():
         listenProcess.start()
         while(readProcess.is_alive()):
             if conn1.poll(0.1):
-                print("found word")
                 self.handler.result = conn1.recv()
                 break
         else:
@@ -126,11 +125,9 @@ class SpeechLoop():
                     listenProcess.start()
                     while(readProcess.is_alive()):
                         if conn1.poll(0.100):
-                            print("got connection result")
                             self.handler.result = conn1.recv()
                             break
                     else:
-                        print("kill listen process")
                         listenProcess.terminate()
                     if killswitch.is_set():
                         break  
@@ -139,11 +136,9 @@ class SpeechLoop():
             print ("File not found")
 
     def findPicture(self, line:str) -> None:
-        print(line)
         for word in line.split():
             word = re.sub("[^A-Za-z]","",word.lower())
             if word in self.handler.imagePlayer.imageDict and word != self.handler.imagePlayer.imageTxt:
-                print(word)
                 self.handler.imagePlayer.setImage(word)
                 return
 
@@ -151,9 +146,10 @@ class SpeechLoop():
 
 def speak_tale(command) -> None:
     """Method for speaking a text with Google's text-to-speech API."""
-    print("in speak tale sprachausgabe")
     if command == "zähne putzen":
         playsound('song-brushteeth.mp3')
+    elif command == "wecker alarm abspielen":
+        playsound('wecker.mp3')
     else:
         tts = gTTS(text=command, lang='de', slow=False)
         tts.save('tts.mp3')
@@ -161,7 +157,7 @@ def speak_tale(command) -> None:
         os.remove('tts.mp3')
 
 def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, watchListWords=watchListWords["abbruch"]) -> None:
-    print(f'listenkill array: {watchListWords}')
+    print(f'listen to kill array: {watchListWords}')
     def listenWithoutClass():
         with sr.Microphone() as source:
             r = sr.Recognizer()
@@ -184,11 +180,8 @@ def listenToKill(thread, pipeconnection:multiprocessing.Pipe, killswitch=None, w
     
     while(1):
         result = listenWithoutClass()
-        print (result)
-        print (watchListWords)
         for word in watchListWords:
             if word in result:
-                print("found matching word")
                 if word == "weiter" or word == "überspringen":
                     pipeconnection.send("")
                 else:
