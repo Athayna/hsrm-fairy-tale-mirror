@@ -176,7 +176,7 @@ class MainLoop(SpeechLoop):
             
         elif "was" in self.handler.result and "kann" in self.handler.result:
             self.handler.result = ""
-            self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
+            self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, den Wecker stellen, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
 
         else:
             self.handler.result = ""
@@ -188,7 +188,7 @@ class MainLoop(SpeechLoop):
                     return
                 if any(x in self.handler.result for x in ("ja", "genau", "gern", "ok", "klar")):
                     self.handler.result = ""
-                    self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
+                    self.speak_text("Ich kann dir ein Märchen erzählen, mit dir Lernspiele spielen, herausfinden wer am Schönsten im ganzen Land ist, den Wecker stellen, dir die Uhrzeit sagen, das Datum nennen oder das Wetter vorhersagen.", watchListWords)
                     break
                 elif any(x in self.handler.result for x in ("nein", "nicht", "nö", "kein", "stop", "ende", "abbrechen")):
                     self.handler.result = ""
